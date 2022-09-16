@@ -1,16 +1,16 @@
 #+TITLE: cl-gtk4
-
-[[file:example/screenshot.png]]
 * Usage
 1. Clone this repository along with [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper][cl-gobject-introspection-wrapper]] and [[https://github.com/bohonghuang/cl-gio][cl-gio]] into the folder ~local-projects~ under where your Quicklisp is installed.
-2. Load the library with ~(ql:quickload :cl-gtk4)~.  ~cl-gtk4~ will automatically create function and variable definitions during loading,
-   so make sure you have ~libgirepository~  installed in your system.
+2. Load the library with ~(ql:quickload :cl-gtk4)~ (or ~(ql:quickload :cl-gtk4.adw)~ if you want to use libadwaita).
 * Example
-This is a simple application built with ~cl-gtk4~ :
+Theoretically, the application built with ~cl-gtk4~ can run on most implementations that support CFFI callback (required by ~cl-gobject-introspection~).
+The examples are tested to run on SBCL, CCL, ECL, and ABCL.
+** [[file:example/gtk4.lisp][Simple Counter]] (GTK4)
+[[file:example/gtk4.png]]
 
 #+BEGIN_SRC lisp
   (defpackage gtk4.example
-    (:use #:cl #:alexandria #:gtk4)
+    (:use #:cl #:gtk4)
     (:export #:main))
 
   (in-package #:gtk4.example)
@@ -43,7 +43,93 @@ This is a simple application built with ~cl-gtk4~ :
                    (window-present window))))
       (gio:application-run app nil)))
 #+END_SRC
+** [[file:example/adw.lisp][Simple Lisp REPL]] (Libadwaita)
+[[file:example/adw.png]]
 
-You can run ~(ql:quickload :cl-gtk4/example)~ and ~(gtk4.example:run)~ in REPL to launch the example application directly.
-Theoretically, the application built with ~cl-gtk4~ can run on most implementations that support CFFI callback (required by ~cl-gobject-introspection~),
-such as SBCL, CCL, ECL, and ABCL.
+#+BEGIN_SRC lisp
+  (defpackage adw.example
+    (:use #:cl #:gtk4)
+    (:export #:main))
+
+  (in-package #:adw.example)
+
+  (defun main-window (app)
+    (let ((expression nil))
+      (let ((window (adw:make-application-window :app app)))
+        (widget-add-css-class window "devel")
+        (widget-set-size-request window 400 600)
+        (let ((box (make-box :orientation +orientation-vertical+
+                             :spacing 0)))
+          (setf (adw:window-content window) box)
+          (let ((header-bar (adw:make-header-bar)))
+            (setf (adw:header-bar-title-widget header-bar)
+                  (adw:make-window-title :title (lisp-implementation-type)
+                                         :subtitle (lisp-implementation-version)))
+            (box-append box header-bar))
+          (let ((carousel (adw:make-carousel)))
+            (setf (widget-hexpand-p carousel) t
+                  (widget-vexpand-p carousel) t
+                  (adw:carousel-interactive-p carousel) t)
+            (let ((page (adw:make-status-page)))
+              (setf (widget-hexpand-p page) t
+                    (widget-vexpand-p page) t
+                    (adw:status-page-icon-name page) "utilities-terminal-symbolic"
+                    (adw:status-page-title page) "Simple Lisp REPL"
+                    (adw:status-page-description page) " ")
+              (flet ((eval-expression (widget)
+                       (declare (ignore widget))
+                       (when expression
+                         (setf (adw:status-page-description page)
+                               (princ-to-string
+                                (handler-case (eval expression)
+                                  (error (err) err)))))))
+                (let ((box (make-box :orientation +orientation-vertical+
+                                     :spacing 0)))
+                  (let ((group (adw:make-preferences-group)))
+                    (setf (widget-margin-all group) 10)
+                    (let ((row (adw:make-action-row)))
+                      (setf (adw:preferences-row-title row) (format nil "~A>" (or (car (package-nicknames *package*))
+                                                                                  (package-name *package*))))
+                      (let ((entry (make-entry)))
+                        (setf (widget-valign entry) +align-center+
+                              (widget-hexpand-p entry) t)
+                        (connect entry "changed" (lambda (entry)
+                                                   (setf expression (ignore-errors (read-from-string (entry-buffer-text (entry-buffer entry)))))
+                                                   (funcall (if expression #'widget-remove-css-class #'widget-add-css-class) entry "error")))
+                        (connect entry "activate" #'eval-expression)
+                        (adw:action-row-add-suffix row entry))
+                      (adw:preferences-group-add group row))
+                    (box-append box group))
+                  (let ((carousel-box box)
+                        (box (make-box :orientation +orientation-horizontal+
+                                       :spacing 0)))
+                    (setf (widget-hexpand-p box) t
+                          (widget-halign box) +align-fill+)
+                    (let ((button (make-button)))
+                      (setf (widget-css-classes button) '("pill")
+                            (widget-margin-all button) 10
+                            (widget-hexpand-p button) t
+                            (button-label button) "Exit")
+                      (connect button "clicked" (lambda (button)
+                                                  (declare (ignore button))
+                                                  (window-destroy window)))
+                      (box-append box button))
+                    (let ((button (make-button)))
+                      (setf (widget-css-classes button) '("suggested-action" "pill")
+                            (widget-margin-all button) 10
+                            (widget-hexpand-p button) t
+                            (button-label button) "Eval")
+                      (connect button "clicked" #'eval-expression)
+                      (box-append box button))
+                    (box-append carousel-box box))
+                  (setf (adw:status-page-child page) box)))
+              (adw:carousel-append carousel page))
+            (box-append box carousel)))
+        (window-present window))))
+
+  (defun main ()
+    (let ((app (make-application :application-id "your.application.id"
+                                 :flags gio:+application-flags-flags-none+)))
+      (connect app "activate" #'main-window)
+      (gio:application-run app nil)))
+#+END_SRC
