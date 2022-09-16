@@ -1,9 +1,49 @@
 #+TITLE: cl-gtk4
 
 [[file:example/screenshot.png]]
-
 * Usage
 1. Clone this repository along with [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper][cl-gobject-introspection-wrapper]] and [[https://github.com/bohonghuang/cl-gio][cl-gio]] into the folder ~local-projects~ under where your Quicklisp is installed.
 2. Load the library with ~(ql:quickload :cl-gtk4)~.  ~cl-gtk4~ will automatically create function and variable definitions during loading,
    so make sure you have ~libgirepository~  installed in your system.
-3. Run example with ~(ql:quickload :cl-gtk4/example)~ and ~(gtk4.example:run)~ if you want.
+* Example
+This is a simple application built with ~cl-gtk4~ :
+
+#+BEGIN_SRC lisp
+  (defpackage gtk4.example
+    (:use #:cl #:alexandria #:gtk4)
+    (:export #:main))
+
+  (in-package #:gtk4.example)
+
+  (defun main ()
+    (let ((app (make-application :application-id "your.application.id"
+                                 :flags gio:+application-flags-flags-none+)))
+      (connect app "activate"
+               (lambda (app)
+                 (let ((window (make-application-window :application app))
+                       (box (make-box :orientation +orientation-vertical+
+                                      :spacing 4)))
+                   (setf (window-title window) "CL-GTK4 Example")
+                   (setf (window-child window) box)
+                   (let ((label (make-label :str "0")))
+                     (setf (widget-hexpand-p label) t)
+                     (setf (widget-vexpand-p label) t)
+                     (box-append box label)
+                     (let ((button (make-button-with-label "Add"))
+                           (count 0))
+                       (box-append box button)
+                       (connect button "clicked" (lambda (button)
+                                                   (declare (ignore button))
+                                                   (setf (label-text label) (format nil "~A" (incf count))))))
+                     (let ((button (make-button-with-label "Exit")))
+                       (box-append box button)
+                       (connect button "clicked" (lambda (button)
+                                                   (declare (ignore button))
+                                                   (window-destroy window)))))
+                   (window-present window))))
+      (gio:application-run app nil)))
+#+END_SRC
+
+You can run ~(ql:quickload :cl-gtk4/example)~ and ~(gtk4.example:run)~ in REPL to launch the example application directly.
+Theoretically, the application built with ~cl-gtk4~ can run on most implementations that support CFFI callback (required by ~cl-gobject-introspection~),
+such as SBCL, CCL, ECL, and ABCL.
