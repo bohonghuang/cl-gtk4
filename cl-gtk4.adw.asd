@@ -9,7 +9,7 @@
   :source-control (:git "https://github.com/BohongHuang/cl-gtk4.git")
   :serial t
   :components ((:file "adw"))
-  :depends-on (#:cl-gobject-introspection-wrapper))
+  :depends-on (#:cl-gobject-introspection-wrapper #:cl-gtk4))
 
 (uiop:register-image-restore-hook
  (lambda ()
@@ -18,3 +18,14 @@
      (when package
        (setf (symbol-value (find-symbol "*NS*" package))
              (uiop:symbol-call :gir :require-namespace namespace))))))
+
+(defsystem cl-gtk4.adw/example
+  :depends-on (#:asdf
+               #:cl-gtk4
+               #:cl-gtk4.adw
+               #:cl-gio)
+  :build-operation program-op
+  :build-pathname "cl-gtk4-libadwaita-example"
+  :entry-point "adw.example:main"
+  :pathname "./example"
+  :components ((:file "adw")))

@@ -1,7 +1,3 @@
-#+sb-core-compression
-(defmethod asdf:perform ((o asdf:image-op) (c asdf:system))
-  (uiop:dump-image (asdf:output-file o c) :executable t :compression t))
-
 (defsystem cl-gtk4
   :version "1.0.0"
   :author "Bohong Huang <1281299809@qq.com>"
