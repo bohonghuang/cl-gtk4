@@ -1,0 +1,9 @@
+#+TITLE: cl-gtk4
+
+[[file:example/screenshot.png]]
+
+* Usage
+1. Clone this repository along with [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper][cl-gobject-introspection-wrapper]] and [[https://github.com/bohonghuang/cl-gio][cl-gio]] into the folder ~local-projects~ under where your Quicklisp is installed.
+2. Load the library with ~(ql:quickload :cl-gtk4)~.  ~cl-gtk4~ will automatically create function and variable definitions during loading,
+   so make sure you have ~libgirepository~  installed in your system.
+3. Run example with ~(ql:quickload :cl-gtk4/example)~ and ~(gtk4.example:run)~ if you want.
