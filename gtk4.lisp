@@ -30,6 +30,14 @@
 
 (gir-wrapper:define-gir-namespace "Gtk" "4.0")
 
+(cl:defun (cl:setf widget-margin-all) (value instance)
+  (cl:setf (widget-margin-top instance) value
+           (widget-margin-bottom instance) value
+           (widget-margin-start instance) value
+           (widget-margin-end instance) value))
+
+(cl:export 'widget-margin-all)
+
 (cl:setf (cl:fdefinition 'connect) #'gir:connect)
 
 (cl:eval-when (:execute :compile-toplevel :load-toplevel)
