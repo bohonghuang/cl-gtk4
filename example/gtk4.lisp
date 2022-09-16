@@ -16,7 +16,7 @@
 ;;;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 (defpackage gtk4.example
-  (:use #:cl #:alexandria #:gtk4)
+  (:use #:cl #:gtk4)
   (:export #:main))
 
 (in-package #:gtk4.example)
