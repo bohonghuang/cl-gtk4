@@ -19,4 +19,10 @@
 
 (cl:in-package #:adw)
 
+(cl:eval-when (:execute :compile-toplevel :load-toplevel)
+  (cl:setf gir-wrapper:*quoted-name-alist* '(("t" . time))))
+
 (gir-wrapper:define-gir-namespace "Adw")
+
+(cl:eval-when (:execute :compile-toplevel :load-toplevel)
+  (cl:setf gir-wrapper:*quoted-name-alist* cl:nil))
