@@ -22,8 +22,7 @@
 (cl:in-package #:gtk4)
 
 (cl:eval-when (:execute :compile-toplevel :load-toplevel)
-  (cl:setf gir-wrapper:*quoted-name-alist* '(("ATContext" . at-context)
-                                             (("TextBuffer" . "get_insert") . text-buffer-get-insert)
+  (cl:setf gir-wrapper:*quoted-name-alist* '((("TextBuffer" . "get_insert") . text-buffer-get-insert)
                                              (("Gesture" . "group") . group-gestures)
                                              (("Widget" . "is_sensitive") . widget-is-sensitive-p)
                                              (("Widget" . "is_visible") . widget-is-visible-p))))
