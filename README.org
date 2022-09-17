@@ -1,10 +1,20 @@
 #+TITLE: cl-gtk4
+* Requirement
+Before getting started, please ensure these libraries are available in your system:
+- ~gtk4~
+- ~libadwaita~ (optional)
+- ~libgirepository~
+Theoretically, the application built with ~cl-gtk4~ can run on most systems supported by GTK4 and most implementations that support CFFI callback (required by ~cl-gobject-introspection~).
+The [[file:example/][examples]] are tested to run on following implementations:
+- SBCL
+- CCL
+- ECL
+- ABCL
 * Usage
 1. Clone this repository along with [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper][cl-gobject-introspection-wrapper]] and [[https://github.com/bohonghuang/cl-gio][cl-gio]] into the folder ~local-projects~ under where your Quicklisp is installed.
 2. Load the library with ~(ql:quickload :cl-gtk4)~ (or ~(ql:quickload :cl-gtk4.adw)~ if you want to use libadwaita).
-* Example
-Theoretically, the application built with ~cl-gtk4~ can run on most implementations that support CFFI callback (required by ~cl-gobject-introspection~).
-The examples are tested to run on SBCL, CCL, ECL, and ABCL.
+3. For GTK4 usage, please refer to [[https://docs.gtk.org/gtk4/][GTK API reference]] and check out the [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper#conversion-rules][conversion rules]] of these APIs.
+* Examples
 ** [[file:example/gtk4.lisp][Simple Counter]] (GTK4)
 [[file:example/gtk4.png]]
 
@@ -20,26 +30,26 @@ The examples are tested to run on SBCL, CCL, ECL, and ABCL.
                                  :flags gio:+application-flags-flags-none+)))
       (connect app "activate"
                (lambda (app)
-                 (let ((window (make-application-window :application app))
-                       (box (make-box :orientation +orientation-vertical+
-                                      :spacing 4)))
+                 (let ((window (make-application-window :application app)))
                    (setf (window-title window) "CL-GTK4 Example")
-                   (setf (window-child window) box)
-                   (let ((label (make-label :str "0")))
-                     (setf (widget-hexpand-p label) t)
-                     (setf (widget-vexpand-p label) t)
-                     (box-append box label)
-                     (let ((button (make-button-with-label "Add"))
-                           (count 0))
-                       (box-append box button)
-                       (connect button "clicked" (lambda (button)
-                                                   (declare (ignore button))
-                                                   (setf (label-text label) (format nil "~A" (incf count))))))
-                     (let ((button (make-button-with-label "Exit")))
-                       (box-append box button)
-                       (connect button "clicked" (lambda (button)
-                                                   (declare (ignore button))
-                                                   (window-destroy window)))))
+                   (let ((box (make-box :orientation +orientation-vertical+
+                                        :spacing 4)))
+                     (let ((label (make-label :str "0")))
+                       (setf (widget-hexpand-p label) t
+                             (widget-vexpand-p label) t)
+                       (box-append box label)
+                       (let ((button (make-button :label "Add"))
+                             (count 0))
+                         (connect button "clicked" (lambda (button)
+                                                     (declare (ignore button))
+                                                     (setf (label-text label) (format nil "~A" (incf count)))))
+                         (box-append box button))
+                       (let ((button (make-button :label "Exit")))
+                         (connect button "clicked" (lambda (button)
+                                                     (declare (ignore button))
+                                                     (window-destroy window)))
+                         (box-append box button)))
+                     (setf (window-child window) box))
                    (window-present window))))
       (gio:application-run app nil)))
 #+END_SRC
@@ -105,20 +115,18 @@ The examples are tested to run on SBCL, CCL, ECL, and ABCL.
                                        :spacing 0)))
                     (setf (widget-hexpand-p box) t
                           (widget-halign box) +align-fill+)
-                    (let ((button (make-button)))
+                    (let ((button (make-button :label "Exit")))
                       (setf (widget-css-classes button) '("pill")
                             (widget-margin-all button) 10
-                            (widget-hexpand-p button) t
-                            (button-label button) "Exit")
+                            (widget-hexpand-p button) t)
                       (connect button "clicked" (lambda (button)
                                                   (declare (ignore button))
                                                   (window-destroy window)))
                       (box-append box button))
-                    (let ((button (make-button)))
+                    (let ((button (make-button :label "Eval")))
                       (setf (widget-css-classes button) '("suggested-action" "pill")
                             (widget-margin-all button) 10
-                            (widget-hexpand-p button) t
-                            (button-label button) "Eval")
+                            (widget-hexpand-p button) t)
                       (connect button "clicked" #'eval-expression)
                       (box-append box button))
                     (box-append carousel-box box))
