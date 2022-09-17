@@ -73,20 +73,18 @@
                                      :spacing 0)))
                   (setf (widget-hexpand-p box) t
                         (widget-halign box) +align-fill+)
-                  (let ((button (make-button)))
+                  (let ((button (make-button :label "Exit")))
                     (setf (widget-css-classes button) '("pill")
                           (widget-margin-all button) 10
-                          (widget-hexpand-p button) t
-                          (button-label button) "Exit")
+                          (widget-hexpand-p button) t)
                     (connect button "clicked" (lambda (button)
                                                 (declare (ignore button))
                                                 (window-destroy window)))
                     (box-append box button))
-                  (let ((button (make-button)))
+                  (let ((button (make-button :label "Eval")))
                     (setf (widget-css-classes button) '("suggested-action" "pill")
                           (widget-margin-all button) 10
-                          (widget-hexpand-p button) t
-                          (button-label button) "Eval")
+                          (widget-hexpand-p button) t)
                     (connect button "clicked" #'eval-expression)
                     (box-append box button))
                   (box-append carousel-box box))
