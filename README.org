@@ -7,6 +7,12 @@ Before getting started, please ensure these libraries are available in your syst
 Theoretically, the application built with ~cl-gtk4~ can run on most systems supported by GTK4 and most implementations that support CFFI callback (required by ~cl-gobject-introspection~).
 The [[file:example/][examples]] are tested to run on following implementations:
 - SBCL
+  - Microsoft Windows \\
+    [[file:example/adw-win.png]]
+  - MacOS \\
+    See: [[https://ibb.co/7KZz3r2]]
+  - GNU/Linux \\
+    See the screenshots in the [[Examples][Examples]] section.
 - CCL
 - ECL
 - ABCL
@@ -136,6 +142,8 @@ The [[file:example/][examples]] are tested to run on following implementations:
         (window-present window))))
 
   (defun main ()
+    (unless (adw:initialized-p)
+      (adw:init))
     (let ((app (make-application :application-id "your.application.id"
                                  :flags gio:+application-flags-flags-none+)))
       (connect app "activate" #'main-window)
