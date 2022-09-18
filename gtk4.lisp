@@ -16,6 +16,7 @@
 ;;;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 (cl:defpackage gtk4
+  (:use)
   (:nicknames #:gtk)
   (:export #:*ns* #:connect))
 
