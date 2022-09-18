@@ -94,6 +94,8 @@
       (window-present window))))
 
 (defun main ()
+  (unless (adw:initialized-p)
+    (adw:init))
   (let ((app (make-application :application-id "org.bohonghuang.cl-gtk4-libadwaita-example"
                                :flags gio:+application-flags-flags-none+)))
     (connect app "activate" #'main-window)
