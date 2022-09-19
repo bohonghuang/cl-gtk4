@@ -26,9 +26,14 @@
   (cl:setf gir-wrapper:*quoted-name-alist* '((("TextBuffer" . "get_insert") . text-buffer-get-insert)
                                              (("Gesture" . "group") . group-gestures)
                                              (("Widget" . "is_sensitive") . widget-is-sensitive-p)
-                                             (("Widget" . "is_visible") . widget-is-visible-p))))
+                                             (("Widget" . "is_visible") . widget-is-visible-p)
+                                             (("EntryBuffer" . "set_text")))))
 
 (gir-wrapper:define-gir-namespace "Gtk" "4.0")
+
+(cl:defun (cl:setf entry-buffer-text) (value instance)
+  (cl:declare (cl:type cl:string value))
+  (gir:invoke (instance 'set-text) value (cl:length value)))
 
 (cl:defun (cl:setf widget-margin-all) (value instance)
   (cl:setf (widget-margin-top instance) value
