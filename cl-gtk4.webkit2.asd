@@ -17,3 +17,13 @@
      (when package
        (setf (symbol-value (find-symbol "*NS*" package))
              (uiop:symbol-call :gir :require-namespace "WebKit2" "5.0"))))))
+
+(defsystem cl-gtk4.webkit2/example
+  :depends-on (#:asdf
+               #:cl-gtk4
+               #:cl-gtk4.webkit2)
+  :build-operation program-op
+  :build-pathname "cl-gtk4-webkit2-example"
+  :entry-point "webkit2.example:main"
+  :pathname "./example"
+  :components ((:file "webkit2")))
