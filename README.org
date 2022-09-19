@@ -1,9 +1,10 @@
 #+TITLE: cl-gtk4
 * Requirement
 Before getting started, please ensure these libraries are available in your system:
-- ~gtk4~
-- ~libadwaita~ (optional)
-- ~libgirepository~
+- GTK4
+- GObject Introspection
+- WebKit2GTK (optional)
+- libadwaita (optional)
 Theoretically, the application built with ~cl-gtk4~ can run on most systems supported by GTK4 and most implementations that support CFFI callback (required by ~cl-gobject-introspection~).
 The [[file:example/][examples]] are tested to run on following implementations:
 - SBCL
@@ -17,135 +18,37 @@ The [[file:example/][examples]] are tested to run on following implementations:
 - ECL
 - ABCL
 * Usage
-1. Clone this repository along with [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper][cl-gobject-introspection-wrapper]] and [[https://github.com/bohonghuang/cl-gio][cl-gio]] into the folder ~local-projects~ under where your Quicklisp is installed.
-2. Load the library with ~(ql:quickload :cl-gtk4)~ (or ~(ql:quickload :cl-gtk4.adw)~ if you want to use libadwaita).
-3. For GTK4 usage, please refer to [[https://docs.gtk.org/gtk4/][GTK API reference]] and check out the [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper#conversion-rules][conversion rules]] of these APIs.
+1. Currently, ~cl-gtk4~ is available on [[https://ultralisp.org][Ultralisp]],  so it can be downloaded via Quicklisp with Ultralisp installed as its distribution.
+   To install ~cl-gtk4~ manually, you can clone this repository along with the following dependencies into the ~local-projects~ under your Quicklisp installation root:
+   - [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper][cl-gobject-introspection-wrapper]]
+   - [[https://github.com/bohonghuang/cl-gio][cl-gio]]
+2. Load the library with:
+   - ~(ql:quickload :cl-gtk4)~
+   - ~(ql:quickload :cl-gtk4.adw)~ (if you need libadwaita)
+   - ~(ql:quickload :cl-gtk4.webkit2)~ (if you need WebKit2GTK)
+3. For GTK4 usage, please refer to [[https://docs.gtk.org/gtk4/][GTK API reference]] and check out the [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper#conversion-rules][conversion rules]] for these APIs.
 * Examples
 ** [[file:example/gtk4.lisp][Simple Counter]] (GTK4)
 [[file:example/gtk4.png]]
 
+To run this example, eval the following in your REPL:
 #+BEGIN_SRC lisp
-  (defpackage gtk4.example
-    (:use #:cl #:gtk4)
-    (:export #:main))
-
-  (in-package #:gtk4.example)
-
-  (defun main ()
-    (let ((app (make-application :application-id "your.application.id"
-                                 :flags gio:+application-flags-flags-none+)))
-      (connect app "activate"
-               (lambda (app)
-                 (let ((window (make-application-window :application app)))
-                   (setf (window-title window) "CL-GTK4 Example")
-                   (let ((box (make-box :orientation +orientation-vertical+
-                                        :spacing 4)))
-                     (let ((label (make-label :str "0")))
-                       (setf (widget-hexpand-p label) t
-                             (widget-vexpand-p label) t)
-                       (box-append box label)
-                       (let ((button (make-button :label "Add"))
-                             (count 0))
-                         (connect button "clicked" (lambda (button)
-                                                     (declare (ignore button))
-                                                     (setf (label-text label) (format nil "~A" (incf count)))))
-                         (box-append box button))
-                       (let ((button (make-button :label "Exit")))
-                         (connect button "clicked" (lambda (button)
-                                                     (declare (ignore button))
-                                                     (window-destroy window)))
-                         (box-append box button)))
-                     (setf (window-child window) box))
-                   (window-present window))))
-      (gio:application-run app nil)))
+  (ql:quickload :cl-gtk4/example)
+  (gtk4.example:main)
 #+END_SRC
 ** [[file:example/adw.lisp][Simple Lisp REPL]] (Libadwaita)
 [[file:example/adw.png]]
 
+To run this example, eval the following in your REPL:
 #+BEGIN_SRC lisp
-  (defpackage adw.example
-    (:use #:cl #:gtk4)
-    (:export #:main))
+  (ql:quickload :cl-gtk4.adw/example)
+  (adw.example:main)
+#+END_SRC
+** [[file:example/webkit2.lisp][Simple Web Browser]] (WebKit2GTK)
+[[file:example/webkit2.png]]
 
-  (in-package #:adw.example)
-
-  (defun main-window (app)
-    (let ((expression nil))
-      (let ((window (adw:make-application-window :app app)))
-        (widget-add-css-class window "devel")
-        (widget-set-size-request window 400 600)
-        (let ((box (make-box :orientation +orientation-vertical+
-                             :spacing 0)))
-          (setf (adw:window-content window) box)
-          (let ((header-bar (adw:make-header-bar)))
-            (setf (adw:header-bar-title-widget header-bar)
-                  (adw:make-window-title :title (lisp-implementation-type)
-                                         :subtitle (lisp-implementation-version)))
-            (box-append box header-bar))
-          (let ((carousel (adw:make-carousel)))
-            (setf (widget-hexpand-p carousel) t
-                  (widget-vexpand-p carousel) t
-                  (adw:carousel-interactive-p carousel) t)
-            (let ((page (adw:make-status-page)))
-              (setf (widget-hexpand-p page) t
-                    (widget-vexpand-p page) t
-                    (adw:status-page-icon-name page) "utilities-terminal-symbolic"
-                    (adw:status-page-title page) "Simple Lisp REPL"
-                    (adw:status-page-description page) " ")
-              (flet ((eval-expression (widget)
-                       (declare (ignore widget))
-                       (when expression
-                         (setf (adw:status-page-description page)
-                               (princ-to-string
-                                (handler-case (eval expression)
-                                  (error (err) err)))))))
-                (let ((box (make-box :orientation +orientation-vertical+
-                                     :spacing 0)))
-                  (let ((group (adw:make-preferences-group)))
-                    (setf (widget-margin-all group) 10)
-                    (let ((row (adw:make-action-row)))
-                      (setf (adw:preferences-row-title row) (format nil "~A>" (or (car (package-nicknames *package*))
-                                                                                  (package-name *package*))))
-                      (let ((entry (make-entry)))
-                        (setf (widget-valign entry) +align-center+
-                              (widget-hexpand-p entry) t)
-                        (connect entry "changed" (lambda (entry)
-                                                   (setf expression (ignore-errors (read-from-string (entry-buffer-text (entry-buffer entry)))))
-                                                   (funcall (if expression #'widget-remove-css-class #'widget-add-css-class) entry "error")))
-                        (connect entry "activate" #'eval-expression)
-                        (adw:action-row-add-suffix row entry))
-                      (adw:preferences-group-add group row))
-                    (box-append box group))
-                  (let ((carousel-box box)
-                        (box (make-box :orientation +orientation-horizontal+
-                                       :spacing 0)))
-                    (setf (widget-hexpand-p box) t
-                          (widget-halign box) +align-fill+)
-                    (let ((button (make-button :label "Exit")))
-                      (setf (widget-css-classes button) '("pill")
-                            (widget-margin-all button) 10
-                            (widget-hexpand-p button) t)
-                      (connect button "clicked" (lambda (button)
-                                                  (declare (ignore button))
-                                                  (window-destroy window)))
-                      (box-append box button))
-                    (let ((button (make-button :label "Eval")))
-                      (setf (widget-css-classes button) '("suggested-action" "pill")
-                            (widget-margin-all button) 10
-                            (widget-hexpand-p button) t)
-                      (connect button "clicked" #'eval-expression)
-                      (box-append box button))
-                    (box-append carousel-box box))
-                  (setf (adw:status-page-child page) box)))
-              (adw:carousel-append carousel page))
-            (box-append box carousel)))
-        (window-present window))))
-
-  (defun main ()
-    (unless (adw:initialized-p)
-      (adw:init))
-    (let ((app (make-application :application-id "your.application.id"
-                                 :flags gio:+application-flags-flags-none+)))
-      (connect app "activate" #'main-window)
-      (gio:application-run app nil)))
+To run this example, eval the following in your REPL:
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gtk4.webkit2/example)
+  (webkit2.example:main)
 #+END_SRC
