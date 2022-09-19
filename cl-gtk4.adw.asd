@@ -22,8 +22,7 @@
 (defsystem cl-gtk4.adw/example
   :depends-on (#:asdf
                #:cl-gtk4
-               #:cl-gtk4.adw
-               #:cl-gio)
+               #:cl-gtk4.adw)
   :build-operation program-op
   :build-pathname "cl-gtk4-libadwaita-example"
   :entry-point "adw.example:main"
