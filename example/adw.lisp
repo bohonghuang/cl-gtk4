@@ -25,7 +25,7 @@
   (let ((expression nil))
     (let ((window (adw:make-application-window :app app)))
       (widget-add-css-class window "devel")
-      (widget-set-size-request window 400 600)
+      (setf (widget-size-request window) '(400 600))
       (let ((box (make-box :orientation +orientation-vertical+
                            :spacing 0)))
         (setf (adw:window-content window) box)
