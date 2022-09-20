@@ -21,7 +21,7 @@ The [[file:example/][examples]] are tested to run on following implementations:
 1. Currently, ~cl-gtk4~ is available on [[https://ultralisp.org][Ultralisp]],  so it can be downloaded via Quicklisp with Ultralisp installed as its distribution.
    To install ~cl-gtk4~ manually, you can clone this repository along with the following dependencies into the ~local-projects~ under your Quicklisp installation root:
    - [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper][cl-gobject-introspection-wrapper]]
-   - [[https://github.com/bohonghuang/cl-gio][cl-gio]]
+   - [[https://github.com/bohonghuang/cl-glib][cl-glib]]
 2. Load the library with:
    - ~(ql:quickload :cl-gtk4)~
    - ~(ql:quickload :cl-gtk4.adw)~ (if you need libadwaita)
