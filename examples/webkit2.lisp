@@ -1,4 +1,4 @@
-;;;; example/webkit2.lisp
+;;;; examples/webkit2.lisp
 
 ;;;; Copyright (C) 2022 Bohong Huang
 ;;;;

@@ -9,7 +9,7 @@ Theoretically, the application built with ~cl-gtk4~ can run on most systems supp
 The [[file:example/][examples]] are tested to run on following implementations:
 - SBCL
   - Microsoft Windows \\
-    [[file:example/adw-win.png]]
+    [[file:examples/screenshots/adw-win.png]]
   - MacOS \\
     See: [[https://ibb.co/7KZz3r2]]
   - GNU/Linux \\
@@ -28,24 +28,32 @@ The [[file:example/][examples]] are tested to run on following implementations:
    - ~(ql:quickload :cl-gtk4.webkit2)~ (if you need WebKit2GTK)
 3. For GTK4 usage, please refer to [[https://docs.gtk.org/gtk4/][GTK API reference]] and check out the [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper#conversion-rules][conversion rules]] for these APIs.
 * Examples
-** [[file:example/gtk4.lisp][Simple Counter]] (GTK4)
-[[file:example/gtk4.png]]
+** [[file:examples/gtk4.lisp::24][Simple Counter]]
+[[file:examples/screenshots/gtk4-simple.png]]
 
 To run this example, eval the following in your REPL:
 #+BEGIN_SRC lisp
   (ql:quickload :cl-gtk4/example)
-  (gtk4.example:main)
+  (gtk4.example:simple)
 #+END_SRC
-** [[file:example/adw.lisp][Simple Lisp REPL]] (Libadwaita)
-[[file:example/adw.png]]
+** [[file:examples/gtk4.lisp::52][Fibonacci Calculator]] (Bordeaux Threads)
+[[file:examples/screenshots/gtk4-fibonacci.png]]
+
+To run this example, eval the following in your REPL:
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gtk4/example)
+  (gtk4.example:fibonacci)
+#+END_SRC
+** [[file:examples/adw.lisp][Simple Lisp REPL]] (Libadwaita)
+[[file:examples/screenshots/adw.png]]
 
 To run this example, eval the following in your REPL:
 #+BEGIN_SRC lisp
   (ql:quickload :cl-gtk4.adw/example)
   (adw.example:main)
 #+END_SRC
-** [[file:example/webkit2.lisp][Simple Web Browser]] (WebKit2GTK)
-[[file:example/webkit2.png]]
+** [[file:examples/webkit2.lisp][Simple Web Browser]] (WebKit2GTK)
+[[file:examples/screenshots/webkit2.png]]
 
 To run this example, eval the following in your REPL:
 #+BEGIN_SRC lisp

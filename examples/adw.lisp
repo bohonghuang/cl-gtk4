@@ -1,4 +1,4 @@
-;;;; example/adw.lisp
+;;;; examples/adw.lisp
 
 ;;;; Copyright (C) 2022 Bohong Huang
 ;;;;

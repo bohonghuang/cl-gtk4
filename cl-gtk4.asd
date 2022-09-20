@@ -21,9 +21,11 @@
 
 (defsystem cl-gtk4/example
   :depends-on (#:asdf
+               #:cl-glib
+               #:bordeaux-threads
                #:cl-gtk4)
   :build-operation program-op
   :build-pathname "cl-gtk4-example"
   :entry-point "gtk4.example:main"
-  :pathname "./example"
+  :pathname "./examples"
   :components ((:file "gtk4")))
