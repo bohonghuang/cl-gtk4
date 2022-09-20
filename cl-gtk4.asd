@@ -9,7 +9,7 @@
   :source-control (:git "https://github.com/BohongHuang/cl-gtk4.git")
   :serial t
   :components ((:file "gtk4"))
-  :depends-on (#:cl-gobject-introspection-wrapper #:cl-gio))
+  :depends-on (#:cl-gobject-introspection-wrapper #:cl-glib.gio))
 
 (uiop:register-image-restore-hook
  (lambda ()
