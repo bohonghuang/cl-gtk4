@@ -60,3 +60,40 @@ To run this example, eval the following in your REPL:
   (ql:quickload :cl-gtk4.webkit2/example)
   (webkit2.example:main)
 #+END_SRC
+* Deployment
+The [[file:examples/][examples]] are ready for being built into executable if the implementation supports ~:program-op~:
+#+BEGIN_SRC lisp
+  (asdf:operate :program-op :cl-gtk4/example)
+#+END_SRC
+Then you could find the executable file under the ~examples~ folder.
+
+Note that: 
+- On ECL, for unknown reason, the ~:entry-point~ of the ASDF system is ignored.
+  This command should be used instead:
+  #+BEGIN_SRC lisp
+    (asdf:make-build :cl-gtk4/example :type :program :epilogue-code '(progn (uiop:symbol-call :gtk4.example :simple) (si:exit)))
+  #+END_SRC
+- On Microsoft Windows, it's recommended to launch your application via [[https://www.dependencywalker.com/][Dependency Walker]],  then the shared libraries used by your application would appear in it.
+  You should copy all these ~.dll~ files into the folder where you place the executable file. If you are using MSYS2, the folder structure might be like this:
+
+  #+BEGIN_EXAMPLE
+    .
+    ├── bin
+    │   ├── gdbus.exe
+    │   ├── libgio-2.0-0.dll
+    │   ├── libgirepository-1.0-1.dll
+    │   ├── libglib-2.0-0.dll
+    │   ├── libgobject-2.0-0.dll
+    │   ├── libgtk-4-1.dll
+    │   ├── your_application.exe
+    │   └── ...
+    ├── lib
+    │   ├── girepository-1.0
+    │   ├── gtk-4.0
+    │   └── ...
+    └── share
+        ├── icons
+        └── ...
+  #+END_EXAMPLE
+
+  The folder ~lib/girepository-1.0~ is mandatory, without which your application won't work as expected.

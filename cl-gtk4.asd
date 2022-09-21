@@ -26,6 +26,6 @@
                #:cl-gtk4)
   :build-operation program-op
   :build-pathname "cl-gtk4-example"
-  :entry-point "gtk4.example:main"
+  :entry-point "gtk4.example:simple"
   :pathname "./examples"
   :components ((:file "gtk4")))
