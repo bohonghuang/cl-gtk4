@@ -6,7 +6,7 @@ Before getting started, please ensure these libraries are available in your syst
 - WebKit2GTK (optional)
 - libadwaita (optional)
 Theoretically, the application built with ~cl-gtk4~ can run on most systems supported by GTK4 and most implementations that support CFFI callback (required by ~cl-gobject-introspection~).
-The [[file:example/][examples]] are tested to run on following implementations:
+The [[file:examples/][examples]] are tested to run on following implementations:
 - SBCL
   - Microsoft Windows \\
     [[file:examples/screenshots/adw-win.png]]
@@ -27,6 +27,45 @@ The [[file:example/][examples]] are tested to run on following implementations:
    - ~(ql:quickload :cl-gtk4.adw)~ (if you need libadwaita)
    - ~(ql:quickload :cl-gtk4.webkit2)~ (if you need WebKit2GTK)
 3. For GTK4 usage, please refer to [[https://docs.gtk.org/gtk4/][GTK API reference]] and check out the [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper#conversion-rules][conversion rules]] for these APIs.
+* Multi-threading
+Please note that GTK runs in a single thread and is NOT thread-safe, so all the UI-related operations must happen in GTK [[https://docs.gtk.org/glib/main-loop.html][main event loop]],
+which means you cannot write the code like this:
+
+#+BEGIN_SRC lisp
+  (let ((label (make-label :str "0"))
+        (count 0))
+    (bt:make-thread
+     (lambda ()
+       (loop :repeat 5
+             :do (setf (label-text label) (format nil "~A" (incf count)))
+                 (sleep 1)))))
+#+END_SRC
+
+GLib provides ~idle_add~ and ~timeout_add~ to add a function to execute in the main event loop,
+which is thread-safe so that it can be called in other threads.
+[[https://github.com/bohonghuang/cl-glib][cl-glib]] wraps ~idle_add~ and ~timeout_add~, so that you can pass Lisp functions to them.
+It also provides these two APIs for convenience:
+- ~glib:with-main-event-loop~ \\
+  Execute the body in GTK main event loop, in which you can access the UI safely:
+  #+BEGIN_SRC lisp
+    (let ((label (make-label :str "0"))
+          (count 0))
+      (bt:make-thread
+       (lambda ()
+         (loop :repeat 5
+               :do (glib:with-main-event-loop
+                     (setf (label-text label) (format nil "~A" (incf count))))
+                   (sleep 1)))))    ; Don't put this into `glib:with-main-event-loop'
+  #+END_SRC
+- ~glib:funcall~ \\
+  Just like ~cl:funcall~,  it calls a function with the rest of its arguments, but within GTK main event loop:
+  #+BEGIN_SRC lisp
+    (let ((window (make-application-window :application app)))
+      (bt:make-thread
+       (lambda ()
+         (sleep 1)
+         (glib:funcall #'window-present window))))
+  #+END_SRC
 * Examples
 ** [[file:examples/gtk4.lisp::24][Simple Counter]]
 [[file:examples/screenshots/gtk4-simple.png]]
@@ -36,7 +75,7 @@ To run this example, eval the following in your REPL:
   (ql:quickload :cl-gtk4/example)
   (gtk4.example:simple)
 #+END_SRC
-** [[file:examples/gtk4.lisp::52][Fibonacci Calculator]] (Bordeaux Threads)
+** [[file:examples/gtk4.lisp::52][Fibonacci Calculator]] (Multi-threading)
 [[file:examples/screenshots/gtk4-fibonacci.png]]
 
 To run this example, eval the following in your REPL:
