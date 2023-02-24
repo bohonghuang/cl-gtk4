@@ -13,7 +13,7 @@ The [[file:examples/][examples]] are tested to run on following implementations:
   - MacOS \\
     See: [[https://ibb.co/7KZz3r2]]
   - GNU/Linux \\
-    See the screenshots in the [[Examples][Examples]] section.
+    See the screenshots in the [[examples][Examples]] section.
 - CCL
 - ECL
 - ABCL
