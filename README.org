@@ -70,7 +70,6 @@ It also provides these two APIs for convenience:
 ** [[file:examples/gtk4.lisp::24][Simple Counter]]
 [[file:examples/screenshots/gtk4-simple.png]]
 
-To run this example, eval the following in your REPL:
 #+BEGIN_SRC lisp
   (ql:quickload :cl-gtk4/example)
   (gtk4.example:simple)
@@ -78,15 +77,20 @@ To run this example, eval the following in your REPL:
 ** [[file:examples/gtk4.lisp::52][Fibonacci Calculator]] (Multi-threading)
 [[file:examples/screenshots/gtk4-fibonacci.png]]
 
-To run this example, eval the following in your REPL:
 #+BEGIN_SRC lisp
   (ql:quickload :cl-gtk4/example)
   (gtk4.example:fibonacci)
 #+END_SRC
+** [[file:examples/gdk4-cairo.lisp][Pokéball Drawing Area]] ([[https://github.com/rpav/cl-cairo2][cl-cairo2]])
+[[file:examples/screenshots/gdk4-cairo.png]]
+
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gdk4/example)
+  (gdk4.example:cairo-test)
+#+END_SRC
 ** [[file:examples/adw.lisp][Simple Lisp REPL]] (Libadwaita)
 [[file:examples/screenshots/adw.png]]
 
-To run this example, eval the following in your REPL:
 #+BEGIN_SRC lisp
   (ql:quickload :cl-gtk4.adw/example)
   (adw.example:main)
@@ -94,7 +98,6 @@ To run this example, eval the following in your REPL:
 ** [[file:examples/webkit2.lisp][Simple Web Browser]] (WebKit2GTK)
 [[file:examples/screenshots/webkit2.png]]
 
-To run this example, eval the following in your REPL:
 #+BEGIN_SRC lisp
   (ql:quickload :cl-gtk4.webkit2/example)
   (webkit2.example:main)

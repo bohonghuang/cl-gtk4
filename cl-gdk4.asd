@@ -1,3 +1,7 @@
+#+sbcl
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (sb-int:set-floating-point-modes :traps nil))
+
 (defsystem cl-gdk4
   :version "1.0.0"
   :author "Bohong Huang <1281299809@qq.com>"
@@ -18,3 +22,14 @@
      (when package
        (setf (symbol-value (find-symbol "*NS*" package))
              (uiop:symbol-call :gir :require-namespace namespace "4.0"))))))
+
+(defsystem cl-gdk4/example
+  :depends-on (#:asdf
+               #:cl-gtk4
+               #:cl-gdk4
+               #:cl-cairo2)
+  :build-operation program-op
+  :build-pathname "cl-gdk4-example"
+  :entry-point "gdk4.example:cairo-test"
+  :pathname "./examples"
+  :components ((:file "gdk4-cairo")))
