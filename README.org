@@ -43,28 +43,20 @@ which means you cannot write the code like this:
 
 GLib provides ~idle_add~ and ~timeout_add~ to add a function to execute in the main event loop,
 which is thread-safe so that it can be called in other threads.
-[[https://github.com/bohonghuang/cl-glib][cl-glib]] wraps ~idle_add~ and ~timeout_add~, so that you can pass Lisp functions to them.
-It also provides these two APIs for convenience:
-- ~glib:with-main-event-loop~ \\
-  Execute the body in GTK main event loop, in which you can access the UI safely:
+[[https://github.com/bohonghuang/cl-glib][cl-glib]] wraps ~idle_add~ and ~timeout_add~, and [[https://github.com/bohonghuang/cl-gtk4][cl-gtk4]] create restarts for the handler passed for them to be invoked safely,
+even when conditions are signaled.
+It also provides the API for convenience:
+- ~gtk:run-in-main-event-loop~ \\
+  Execute the body in GTK main event loop, in which we can access the UI safely:
   #+BEGIN_SRC lisp
     (let ((label (make-label :str "0"))
           (count 0))
       (bt:make-thread
        (lambda ()
          (loop :repeat 5
-               :do (glib:with-main-event-loop
+               :do (gtk:run-in-main-event-loop
                      (setf (label-text label) (format nil "~A" (incf count))))
-                   (sleep 1)))))    ; Don't put this into `glib:with-main-event-loop'
-  #+END_SRC
-- ~glib:funcall~ \\
-  Just like ~cl:funcall~,  it calls a function with the rest of its arguments, but within GTK main event loop:
-  #+BEGIN_SRC lisp
-    (let ((window (make-application-window :application app)))
-      (bt:make-thread
-       (lambda ()
-         (sleep 1)
-         (glib:funcall #'window-present window))))
+                   (sleep 1)))))    ; Don't put this into `gtk:run-in-main-event-loop'
   #+END_SRC
 * Examples
 ** [[file:examples/gtk4.lisp::24][Simple Counter]]

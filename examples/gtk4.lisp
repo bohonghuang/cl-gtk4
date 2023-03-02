@@ -1,6 +1,6 @@
 ;;;; examples/gtk4.lisp
 
-;;;; Copyright (C) 2022 Bohong Huang
+;;;; Copyright (C) 2022-2023 Bohong Huang
 ;;;;
 ;;;; This program is free software: you can redistribute it and/or modify
 ;;;; it under the terms of the GNU Lesser General Public License as published by
@@ -47,7 +47,7 @@
                        (box-append box button)))
                    (setf (window-child window) box))
                  (window-present window))))
-    (gio:application-run app nil)))
+    (application-run app nil)))
 
 (defun fibonacci ()
   (labels ((fib (n)
@@ -87,15 +87,15 @@
                                                      (bt:make-thread
                                                       (lambda ()
                                                         (when n
-                                                          (glib:with-main-event-loop
+                                                          (run-in-main-event-loop ()
                                                             (setf (button-label button) "Calculating..."
                                                                   (widget-sensitive-p button) nil))
-                                                          (glib:funcall (lambda (result)
-                                                                          (setf (label-text label) (format nil "~A" result)
-                                                                                (button-label button) "Calculate"
-                                                                                (widget-sensitive-p button) t))
-                                                                        (fib n)))))))
+                                                          (let ((result (fib n)))
+                                                            (run-in-main-event-loop ()
+                                                              (setf (label-text label) (format nil "~A" result)
+                                                                    (button-label button) "Calculate"
+                                                                    (widget-sensitive-p button) t))))))))
                          (box-append box button)))
                      (setf (window-child window) box))
                    (window-present window))))
-      (gio:application-run app nil))))
+      (application-run app nil))))
