@@ -15,92 +15,139 @@
 ;;;; You should have received a copy of the GNU Lesser General Public License
 ;;;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(cl:defpackage gtk4
-  (:use)
+(defpackage gtk4
+  (:use #:cl)
   (:nicknames #:gtk)
   (:export #:*ns*))
 
-(cl:in-package #:gtk4)
+(in-package #:gtk4)
 
-(cl:eval-when (:execute :compile-toplevel :load-toplevel)
-  (cl:setf gir-wrapper:*quoted-name-alist* '((("TextBuffer" . "get_insert") . text-buffer-get-insert)
-                                             (("Gesture" . "group") . group-gestures)
-                                             (("Widget" . "is_sensitive") . widget-is-sensitive-p)
-                                             (("Widget" . "is_visible") . widget-is-visible-p)
-                                             (("EntryBuffer" . "set_text")))))
+(eval-when (:execute :compile-toplevel :load-toplevel)
+  (setf gir-wrapper:*quoted-name-alist* '((("TextBuffer" . "get_insert") . text-buffer-get-insert)
+                                          (("Gesture" . "group") . group-gestures)
+                                          (("Widget" . "is_sensitive") . widget-is-sensitive-p)
+                                          (("Widget" . "is_visible") . widget-is-visible-p)
+                                          (("EntryBuffer" . "set_text")))))
 
 (gir-wrapper:define-gir-namespace "Gtk" "4.0")
 
-(cl:defun (cl:setf entry-buffer-text) (value instance)
-  (cl:declare (cl:type cl:string value))
-  (gir:invoke (instance 'set-text) value (cl:length value)))
+(eval-when (:execute :compile-toplevel :load-toplevel)
+  (setf gir-wrapper:*quoted-name-alist* nil))
 
-(cl:defun (cl:setf widget-margin-all) (value instance)
-  (cl:setf (widget-margin-top instance) value
-           (widget-margin-bottom instance) value
-           (widget-margin-start instance) value
-           (widget-margin-end instance) value))
+(defun (setf entry-buffer-text) (value instance)
+  (declare (type string value))
+  (gir:invoke (instance 'set-text) value (length value)))
 
-(cl:export 'widget-margin-all)
+(defun (setf widget-margin-all) (value instance)
+  (setf (widget-margin-top instance) value
+        (widget-margin-bottom instance) value
+        (widget-margin-start instance) value
+        (widget-margin-end instance) value))
 
-(cl:defun destroy-all-windows-and-quit ()
-  (cl:mapcar (alexandria:compose #'window-close (alexandria:curry #'make-window :pointer))
-             (glib:glist-list (application-windows gio:*application*)))
-  (idle-add (cl:lambda () (gio:application-quit gio:*application*))))
+(export 'widget-margin-all)
 
-(cl:defun read-return-value ()
-  (cl:format cl:*query-io* "~&Enter the return value: ")
-  (cl:finish-output cl:*query-io*)
-  (cl:multiple-value-list (cl:eval (cl:read cl:*query-io*))))
+(defun destroy-all-windows ()
+  (mapcar (alexandria:compose #'window-close (alexandria:curry #'make-window :pointer))
+          (glib:glist-list (application-windows gio:*application*))))
 
-(cl:defun attach-restarts (function)
-  (cl:lambda (cl:&rest args)
-    (cl:restart-case (cl:apply function args)
+(defun destroy-all-windows-and-quit ()
+  (destroy-all-windows)
+  (idle-add (lambda () (gio:application-quit gio:*application*))))
+
+(defun read-return-value ()
+  (format *query-io* "~&Enter the return value: ")
+  (finish-output *query-io*)
+  (multiple-value-list (eval (read *query-io*))))
+
+(defun attach-restarts (function)
+  (lambda (&rest args)
+    (restart-case (apply function args)
       (return ()
         :report "Return from current handler."
-        (cl:values cl:nil))
+        (values nil))
       (return-and-abort ()
-        :report "Return from current handler and terminate the GTK application."
+        :report "Return from current handler and abort the GTK application."
         (destroy-all-windows-and-quit)
-        (cl:values cl:nil))
+        (values nil))
       (return-value (value)
         :report "Return from current handler with specified value."
         :interactive read-return-value
-        (cl:values value))
+        (values value))
       (return-value-and-abort (value)
-        :report "Return from current handler with specified value and terminate the GTK application."
+        :report "Return from current handler with specified value and abort the GTK application."
         :interactive read-return-value
         (destroy-all-windows-and-quit)
-        (cl:values value)))))
+        (values value)))))
 
-(cl:defun connect (g-object signal c-handler cl:&key after swapped)
+(defun connect (g-object signal c-handler &key after swapped)
   (gir:connect g-object signal (attach-restarts c-handler) :after after :swapped swapped))
 
-(cl:export 'connect)
+(export 'connect)
 
-(cl:defun idle-add (function cl:&optional (priority glib:+priority-default+))
+(defun idle-add (function &optional (priority glib:+priority-default+))
   (glib:idle-add (attach-restarts function) priority))
 
-(cl:export 'idle-add)
+(export 'idle-add)
 
-(cl:defun timeout-add (interval function cl:&optional (priority glib:+priority-default+))
+(defun timeout-add (interval function &optional (priority glib:+priority-default+))
   (glib:timeout-add interval (attach-restarts function) priority))
 
-(cl:export 'timeout-add)
+(export 'timeout-add)
 
-(cl:defun timeout-add-seconds (interval function cl:&optional (priority glib:+priority-default+))
+(defun timeout-add-seconds (interval function &optional (priority glib:+priority-default+))
   (glib:timeout-add-seconds interval (attach-restarts function) priority))
 
-(cl:export 'timeout-add-seconds)
+(export 'timeout-add-seconds)
 
-(cl:defmacro run-in-main-event-loop ((cl:&key (priority 'glib:+priority-default+)) cl:&body body)
-  `(idle-add (cl:lambda () ,@body cl:nil) ,priority))
+(defmacro run-in-main-event-loop ((&key (priority 'glib:+priority-default+)) &body body)
+  `(idle-add (lambda () ,@body nil) ,priority))
 
-(cl:export 'run-in-main-event-loop)
+(export 'run-in-main-event-loop)
 
-(cl:setf (cl:fdefinition 'application-run) (cl:fdefinition 'gio:application-run))
+(setf (fdefinition 'application-run) (fdefinition 'gio:application-run))
 
-(cl:export 'application-run)
+(defun application-run (application argv)
+  (handler-bind ((t (lambda (c)
+                      (print c))))
+    (gio:application-run application argv)))
 
-(cl:eval-when (:execute :compile-toplevel :load-toplevel)
-  (cl:setf gir-wrapper:*quoted-name-alist* cl:nil))
+(export 'application-run)
+
+(defun simple-break-symbol ()
+  (find-symbol "SIMPLE-BREAK" (cond
+                                ((member :slynk *features*) :slynk)
+                                ((member :swank *features*) :swank)
+                                (t (return-from simple-break-symbol nil)))))
+
+(defvar *simple-break-function* nil)
+
+(defun break-from-main-event-loop ()
+  (if gio:*application*
+      (glib:idle-add (lambda ()
+                       (restart-case (funcall *simple-break-function*)
+                         (abort-application ()
+                           :report "Abort the GTK application."
+                           (destroy-all-windows-and-quit)))
+                       (values nil))
+                     glib:+priority-high+)
+      (funcall *simple-break-function*)))
+
+(defun install-break-handler ()
+  (when *simple-break-function*
+    (error "Cannot install the break handler twice."))
+  (setf *simple-break-function* (fdefinition (simple-break-symbol))
+        (fdefinition (simple-break-symbol)) (fdefinition 'break-from-main-event-loop)))
+
+(export 'install-break-handler)
+
+(defun uninstall-break-handler ()
+  (unless *simple-break-function*
+    (error "The break handler has not been installed."))
+  (setf (fdefinition (simple-break-symbol)) *simple-break-function*
+        *simple-break-function* nil))
+
+(export 'uninstall-break-handler)
+
+(when (simple-break-symbol)
+  (unless *simple-break-function*
+    (install-break-handler)))
