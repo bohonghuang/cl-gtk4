@@ -18,7 +18,8 @@
 (defpackage gtk4
   (:use #:cl)
   (:nicknames #:gtk)
-  (:export #:*ns*))
+  (:import-from #:gio #:*application*)
+  (:export #:*ns* #:*application*))
 
 (in-package #:gtk4)
 
@@ -47,7 +48,7 @@
 (export 'widget-margin-all)
 
 (defun destroy-all-windows ()
-  (mapcar (alexandria:compose #'window-close (alexandria:curry #'make-window :pointer))
+  (mapcar (alexandria:compose #'window-close (alexandria:rcurry #'gobj:pointer-object 'window))
           (glib:glist-list (application-windows gio:*application*))))
 
 (defun destroy-all-windows-and-quit ()
