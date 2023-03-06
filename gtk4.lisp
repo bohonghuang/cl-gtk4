@@ -107,11 +107,6 @@
 
 (setf (fdefinition 'application-run) (fdefinition 'gio:application-run))
 
-(defun application-run (application argv)
-  (handler-bind ((t (lambda (c)
-                      (print c))))
-    (gio:application-run application argv)))
-
 (export 'application-run)
 
 (defun simple-break-symbol ()
@@ -152,3 +147,46 @@
 (when (simple-break-symbol)
   (unless *simple-break-function*
     (install-break-handler)))
+
+(defmacro define-main-window (binding &body body)
+  (declare (ignore binding body))
+  (error "Cannot expand DEFINE-MAIN-WINDOW outside DEFINE-APPLICATION."))
+
+(defmacro define-application ((&key
+                                 (id "org.bohonghunag.cl-gtk4" id-specified-p)
+                                 (flags gio:+application-flags-flags-none+)
+                                 (name nil))
+                              &body
+                                body)
+  (let ((prefix (if id-specified-p (format nil "~A." id) "")))
+    (let ((window (intern (format nil "*~AMAIN-WINDOW*" (string-upcase prefix))))
+          (content (intern (format nil "~AMAIN-WINDOW-CONTENT" (string-upcase prefix))))
+          (main (intern (format nil "~AMAIN" (string-upcase prefix)))))
+      `(macrolet ((define-main-window (binding &body body)
+                    (destructuring-bind (win-bind win-form)
+                        (etypecase binding
+                          (list binding)
+                          (symbol (list (gensym) binding)))
+                      `(progn
+                         (defun ,',content (,win-bind)
+                           (declare (ignorable ,win-bind))
+                           ,@body)
+                         (defun ,',main (&optional argv)
+                           (let ((app (make-application :application-id ,',id
+                                                        :flags ,',flags)))
+                             (connect app "activate" (lambda (app)
+                                                       (declare (ignore app))
+                                                       (let ((win (setf ,',window ,win-form)))
+                                                         (,',content win)
+                                                         (connect win "destroy" (lambda (win) (declare (ignore win)) (setf ,',window nil))))))
+                             (application-run app argv)))
+                         ,(when ',name
+                            `(setf (fdefinition ',',name) (fdefinition ',',main)))
+                         (eval-when (:load-toplevel)
+                           (when ,',window
+                             (idle-add (lambda () (,',content ,',window) nil))))))))
+         
+         (defvar ,window nil)
+         ,@body))))
+
+(export '(define-application define-main-window))

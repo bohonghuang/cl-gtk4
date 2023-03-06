@@ -21,81 +21,73 @@
 
 (in-package #:gtk4.example)
 
-(defun simple ()
-  (let ((app (make-application :application-id "org.bohonghuang.cl-gtk4-example"
-                               :flags gio:+application-flags-flags-none+)))
-    (connect app "activate"
-             (lambda (app)
-               (let ((window (make-application-window :application app)))
-                 (setf (window-title window) "Simple Counter")
-                 (let ((box (make-box :orientation +orientation-vertical+
-                                      :spacing 4)))
-                   (let ((label (make-label :str "0")))
-                     (setf (widget-hexpand-p label) t
-                           (widget-vexpand-p label) t)
-                     (box-append box label)
-                     (let ((button (make-button :label "Add"))
-                           (count 0))
-                       (connect button "clicked" (lambda (button)
-                                                   (declare (ignore button))
-                                                   (setf (label-text label) (format nil "~A" (incf count)))))
-                       (box-append box button))
-                     (let ((button (make-button :label "Exit")))
-                       (connect button "clicked" (lambda (button)
-                                                   (declare (ignore button))
-                                                   (window-destroy window)))
-                       (box-append box button)))
-                   (setf (window-child window) box))
-                 (window-present window))))
-    (application-run app nil)))
+(define-application (:name simple
+                     :id "org.bohonghuang.gtk4-example.counter")
+  (define-main-window (window (make-application-window :application *application*))
+    (setf (window-title window) "Simple Counter")
+    (let ((box (make-box :orientation +orientation-vertical+
+                         :spacing 4)))
+      (let ((label (make-label :str "0")))
+        (setf (widget-hexpand-p label) t
+              (widget-vexpand-p label) t)
+        (box-append box label)
+        (let ((button (make-button :label "Add"))
+              (count 0))
+          (connect button "clicked" (lambda (button)
+                                      (declare (ignore button))
+                                      (setf (label-text label) (format nil "~A" (incf count)))))
+          (box-append box button))
+        (let ((button (make-button :label "Exit")))
+          (connect button "clicked" (lambda (button)
+                                      (declare (ignore button))
+                                      (window-destroy window)))
+          (box-append box button)))
+      (setf (window-child window) box))
+    (unless (widget-visible-p window)
+      (window-present window))))
 
-(defun fibonacci ()
-  (labels ((fib (n)
-             (if (<= n 2)
-                 1
-                 (+ (fib (- n 1)) (fib (- n 2))))))
-    (let ((app (make-application :application-id "org.bohonghuang.cl-gtk4-example"
-                                 :flags gio:+application-flags-flags-none+))
-          (n 40))
-      (connect app "activate"
-               (lambda (app)
-                 (let ((window (make-application-window :application app)))
-                   (setf (window-title window) "FIBONACCI CALCULATOR")
-                   (let ((box (make-box :orientation +orientation-vertical+
-                                        :spacing 4)))
-                     (let ((label (make-label :str "0")))
-                       (setf (widget-hexpand-p label) t
-                             (widget-vexpand-p label) t)
-                       (box-append box label)
-                       (let ((parent box)
-                             (box (make-box :orientation +orientation-horizontal+
-                                            :spacing 4)))
-                         (setf (widget-hexpand-p box) t
-                               (widget-halign box) +align-center+)
-                         (let ((label (make-label :str "n: ")))
-                           (box-append box label))
-                         (let ((entry (make-entry)))
-                           (setf (widget-hexpand-p label) t
-                                 (widget-halign label) +align-fill+
-                                 (entry-buffer-text (entry-buffer entry)) (format nil "~A" n))
-                           (connect entry "changed" (lambda (entry)
-                                                      (setf n (ignore-errors (parse-integer (entry-buffer-text (entry-buffer entry)))))))
-                           (box-append box entry))
-                         (box-append parent box))
-                       (let ((button (make-button :label "Calculate")))
-                         (connect button "clicked" (lambda (button)
-                                                     (bt:make-thread
-                                                      (lambda ()
-                                                        (when n
-                                                          (run-in-main-event-loop ()
-                                                            (setf (button-label button) "Calculating..."
-                                                                  (widget-sensitive-p button) nil))
-                                                          (let ((result (fib n)))
-                                                            (run-in-main-event-loop ()
-                                                              (setf (label-text label) (format nil "~A" result)
-                                                                    (button-label button) "Calculate"
-                                                                    (widget-sensitive-p button) t))))))))
-                         (box-append box button)))
-                     (setf (window-child window) box))
-                   (window-present window))))
-      (application-run app nil))))
+(define-application (:name fibonacci
+                     :id "org.bohonghuang.gtk4-example.fibonacci")
+  (defun fib (n)
+    (if (<= n 2) 1 (+ (fib (- n 1)) (fib (- n 2)))))
+  (define-main-window (window (make-application-window :application *application*))
+    (let ((n 40))
+      (setf (window-title window) "FIBONACCI CALCULATOR")
+      (let ((box (make-box :orientation +orientation-vertical+
+                           :spacing 4)))
+        (let ((label (make-label :str "0")))
+          (setf (widget-hexpand-p label) t
+                (widget-vexpand-p label) t)
+          (box-append box label)
+          (let ((parent box)
+                (box (make-box :orientation +orientation-horizontal+
+                               :spacing 4)))
+            (setf (widget-hexpand-p box) t
+                  (widget-halign box) +align-center+)
+            (let ((label (make-label :str "n: ")))
+              (box-append box label))
+            (let ((entry (make-entry)))
+              (setf (widget-hexpand-p label) t
+                    (widget-halign label) +align-fill+
+                    (entry-buffer-text (entry-buffer entry)) (format nil "~A" n))
+              (connect entry "changed" (lambda (entry)
+                                         (setf n (ignore-errors (parse-integer (entry-buffer-text (entry-buffer entry)))))))
+              (box-append box entry))
+            (box-append parent box))
+          (let ((button (make-button :label "Calculate")))
+            (connect button "clicked" (lambda (button)
+                                        (bt:make-thread
+                                         (lambda ()
+                                           (when n
+                                             (run-in-main-event-loop ()
+                                               (setf (button-label button) "Calculating..."
+                                                     (widget-sensitive-p button) nil))
+                                             (let ((result (fib n)))
+                                               (run-in-main-event-loop ()
+                                                 (setf (label-text label) (format nil "~A" result)
+                                                       (button-label button) "Calculate"
+                                                       (widget-sensitive-p button) t))))))))
+            (box-append box button)))
+        (setf (window-child window) box)))
+    (unless (widget-visible-p window)
+      (window-present window))))

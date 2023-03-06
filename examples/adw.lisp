@@ -21,9 +21,10 @@
 
 (in-package #:adw.example)
 
-(defun main-window (app)
-  (let ((expression nil))
-    (let ((window (adw:make-application-window :app app)))
+(define-application (:name simple-repl
+                     :id "org.bohonghuang.libadwaita-example.simple-repl")
+  (define-main-window (window (adw:make-application-window :app *application*))
+    (let ((expression nil))
       (widget-add-css-class window "devel")
       (setf (widget-size-request window) '(400 600))
       (let ((box (make-box :orientation +orientation-vertical+
@@ -91,12 +92,10 @@
                 (setf (adw:status-page-child page) box)))
             (adw:carousel-append carousel page))
           (box-append box carousel)))
-      (window-present window))))
+      (unless (widget-visible-p window)
+        (window-present window)))))
 
 (defun main ()
   (unless (adw:initialized-p)
     (adw:init))
-  (let ((app (make-application :application-id "org.bohonghuang.cl-gtk4-libadwaita-example"
-                               :flags gio:+application-flags-flags-none+)))
-    (connect app "activate" #'main-window)
-    (application-run app nil)))
+  (simple-repl))
