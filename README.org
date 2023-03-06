@@ -1,4 +1,7 @@
 #+TITLE: cl-gtk4
+[[https://docs.gtk.org/gtk4/gtk-logo.svg]]
+
+GTK4/Libadwaita/WebKit2 bindings for Common Lisp.
 * Requirement
 Before getting started, please ensure these libraries are available in your system:
 - GTK4
@@ -59,12 +62,17 @@ It also provides the API for convenience:
                    (sleep 1)))))    ; Don't put this into `gtk:run-in-main-event-loop'
   #+END_SRC
 * Interactive Programming
+** Live Reload
+You can reload the application without closing the window constructed in ~define-main-window~ by recompiling the ~define-application~ macro in top-level (Simply stroke =C-c C-c= if using Slime/Sly in Emacs):
+
+[[file:screenshots/live-reload.gif]]
+** Restarts
 The API in ~cl-gtk4~ handles almost all possible recoverable errors by providing restarts, by which you can recover the program or safely exit the GTK application when encountering an error.
 
 Please note that stack unwinding into FFI functions is unsafe and may cause you to be unable to run the GTK application in the current session again, or even freeze or crash the Lisp implementation.
 Therefore, it is important to always use the restarts provided by ~cl-gtk4~ or other restarts that do not unwind the stack into FFI functions to recover or exit the application.
 
-Additionally, when you attempt to interrupt a GTK program through Slime/Swank, such as =C-c C-c= in Emacs' REPL,
+Additionally, when you attempt to interrupt a GTK program through Slime/Sly, such as =C-c C-c= in Emacs' REPL,
 remember to choose =ABORT-APPLICATION= provided by ~cl-gtk4~ instead of =ABORT= provided by the Lisp implementation.
 
 The highlighted restarts as follows, for example, are safe, while the rest perform stack unwinding and are therefore unsafe in GTK applications:
