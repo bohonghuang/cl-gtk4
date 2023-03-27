@@ -19,7 +19,8 @@
   (:use #:cl)
   (:nicknames #:gtk)
   (:import-from #:gio #:*application*)
-  (:export #:*ns* #:*application*))
+  (:import-from #:gir #:property)
+  (:export #:*ns* #:*application* #:property))
 
 (in-package #:gtk4)
 
