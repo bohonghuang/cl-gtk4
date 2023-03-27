@@ -3,10 +3,10 @@
   :author "Bohong Huang <1281299809@qq.com>"
   :maintainer "Bohong Huang <1281299809@qq.com>"
   :license "LGPLv3"
-  :description "GTK4 binding for Common Lisp."
-  :homepage "https://github.com/BohongHuang/cl-gtk4"
-  :bug-tracker "https://github.com/BohongHuang/cl-gtk4/issues"
-  :source-control (:git "https://github.com/BohongHuang/cl-gtk4.git")
+  :description "GTK4 bindings for Common Lisp."
+  :homepage "https://github.com/bohonghuang/cl-gtk4"
+  :bug-tracker "https://github.com/bohonghuang/cl-gtk4/issues"
+  :source-control (:git "https://github.com/bohonghuang/cl-gtk4.git")
   :serial t
   :components ((:file "gtk4"))
   :depends-on (#:cl-gobject-introspection-wrapper #:cl-glib #:cl-glib.gio #:cl-glib.gobject))

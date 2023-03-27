@@ -3,10 +3,10 @@
   :author "Bohong Huang <1281299809@qq.com>"
   :maintainer "Bohong Huang <1281299809@qq.com>"
   :license "LGPLv3"
-  :description "WebKit2GTK binding for Common Lisp."
-  :homepage "https://github.com/BohongHuang/cl-gtk4"
-  :bug-tracker "https://github.com/BohongHuang/cl-gtk4/issues"
-  :source-control (:git "https://github.com/BohongHuang/cl-gtk4.git")
+  :description "WebKit2GTK bindings for Common Lisp."
+  :homepage "https://github.com/bohonghuang/cl-gtk4"
+  :bug-tracker "https://github.com/bohonghuang/cl-gtk4/issues"
+  :source-control (:git "https://github.com/bohonghuang/cl-gtk4.git")
   :serial t
   :components ((:file "webkit2"))
   :depends-on (#:cl-gobject-introspection-wrapper #:cl-gtk4))
