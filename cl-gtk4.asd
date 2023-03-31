@@ -9,7 +9,7 @@
   :source-control (:git "https://github.com/bohonghuang/cl-gtk4.git")
   :serial t
   :components ((:file "gtk4"))
-  :depends-on (#:cl-gobject-introspection-wrapper #:cl-glib #:cl-glib.gio #:cl-glib.gobject))
+  :depends-on (#:cl-gobject-introspection-wrapper #:cl-glib #:cl-gio #:cl-gobject))
 
 (uiop:register-image-restore-hook
  (lambda ()
@@ -21,8 +21,8 @@
 
 (defsystem cl-gtk4/example
   :depends-on (#:asdf
-               #:cl-glib
                #:bordeaux-threads
+               #:cl-glib
                #:cl-gtk4)
   :build-operation program-op
   :build-pathname "cl-gtk4-example"
