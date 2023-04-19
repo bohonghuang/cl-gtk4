@@ -17,7 +17,7 @@
 
 (defpackage gtk4.example
   (:use #:cl #:gtk4)
-  (:export #:simple #:fibonacci #:menu-test))
+  (:export #:simple #:fibonacci #:menu-test #:text-view-test))
 
 (in-package #:gtk4.example)
 

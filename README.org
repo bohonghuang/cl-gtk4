@@ -30,7 +30,7 @@ The [[file:examples/][examples]] are tested to run on following implementations:
    - ~(ql:quickload :cl-gtk4.adw)~ (if you need libadwaita)
    - ~(ql:quickload :cl-gtk4.webkit2)~ (if you need WebKit2GTK)
 3. For GTK4 usage, please refer to [[https://docs.gtk.org/gtk4/][GTK API reference]] and check out the [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper#conversion-rules][conversion rules]] for these APIs.
-* Multi-threading
+** Multi-threading
 Please note that GTK runs in a single thread and is NOT thread-safe, so all the UI-related operations must happen in GTK [[https://docs.gtk.org/glib/main-loop.html][main event loop]],
 which means you cannot write the code like this:
 
@@ -61,12 +61,12 @@ It also provides the API for convenience:
                      (setf (label-text label) (format nil "~A" (incf count))))
                    (sleep 1)))))    ; Don't put this into `gtk:run-in-main-event-loop'
   #+END_SRC
-* Interactive Programming
-** Live Reload
+** Interactive Programming
+*** Live Reload
 You can reload the application without closing the window constructed in ~define-main-window~ by recompiling the ~define-application~ macro in top-level (Simply stroke =C-c C-c= if using Slime/Sly in Emacs):
 
 [[file:screenshots/live-reload.gif]]
-** Restarts
+*** Restarts
 The API in ~cl-gtk4~ handles almost all possible recoverable errors by providing restarts, by which you can recover the program or safely exit the GTK application when encountering an error.
 
 Please note that stack unwinding into FFI functions is unsafe and may cause you to be unable to run the GTK application in the current session again, or even freeze or crash the Lisp implementation.
@@ -81,41 +81,7 @@ The highlighted restarts as follows, for example, are safe, while the rest perfo
 
 [[file:screenshots/restart-2.png]]
 * Examples
-** [[file:examples/gtk4.lisp::24][Simple Counter]]
-[[file:examples/screenshots/gtk4-simple.png]]
-
-#+BEGIN_SRC lisp
-  (ql:quickload :cl-gtk4/example)
-  (gtk4.example:simple)
-#+END_SRC
-** [[file:examples/gtk4.lisp::52][Fibonacci Calculator]] (Multi-threading)
-[[file:examples/screenshots/gtk4-fibonacci.png]]
-
-#+BEGIN_SRC lisp
-  (ql:quickload :cl-gtk4/example)
-  (gtk4.example:fibonacci)
-#+END_SRC
-** [[file:examples/gdk4-cairo.lisp][Pokéball Drawing Area]] ([[https://github.com/rpav/cl-cairo2][cl-cairo2]])
-[[file:examples/screenshots/gdk4-cairo.png]]
-
-#+BEGIN_SRC lisp
-  (ql:quickload :cl-gdk4/example)
-  (gdk4.example:cairo-test)
-#+END_SRC
-** [[file:examples/adw.lisp][Simple Lisp REPL]] (Libadwaita)
-[[file:examples/screenshots/adw.png]]
-
-#+BEGIN_SRC lisp
-  (ql:quickload :cl-gtk4.adw/example)
-  (adw.example:main)
-#+END_SRC
-** [[file:examples/webkit2.lisp][Simple Web Browser]] (WebKit2GTK)
-[[file:examples/screenshots/webkit2.png]]
-
-#+BEGIN_SRC lisp
-  (ql:quickload :cl-gtk4.webkit2/example)
-  (webkit2.example:main)
-#+END_SRC
+See the [[file:examples/][examples]] folder.
 * Deployment
 The [[file:examples/][examples]] are ready for being built into executable if the implementation supports ~:program-op~:
 #+BEGIN_SRC lisp

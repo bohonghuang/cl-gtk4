@@ -1,0 +1,50 @@
+#+TITLE: Example Gallery
+* [[file:gtk4.lisp::24][Simple Counter]]
+[[file:screenshots/gtk4-simple.png]]
+
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gtk4/example)
+  (gtk4.example:simple)
+#+END_SRC
+* [[file:gtk4.lisp::49][Fibonacci Calculator]] (Multi-threading)
+[[file:screenshots/gtk4-fibonacci.png]]
+
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gtk4/example)
+  (gtk4.example:fibonacci)
+#+END_SRC
+* [[file:gtk4.lisp::95][Simple Menu]]
+[[file:screenshots/menu.png]]
+
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gtk4/example)
+  (gtk4.example:menu-test)
+#+END_SRC
+* [[file:gtk4.lisp::154][Simple Text View]]
+[[file:screenshots/text-view.png]]
+
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gtk4/example)
+  (gtk4.example:text-view-test)
+#+END_SRC
+* [[file:gdk4-cairo.lisp][Pokéball Drawing Area]] ([[https://github.com/rpav/cl-cairo2][cl-cairo2]])
+[[file:screenshots/gdk4-cairo.png]]
+
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gdk4/example)
+  (gdk4.example:cairo-test)
+#+END_SRC
+* [[file:adw.lisp][Simple Lisp REPL]] (Libadwaita)
+[[file:screenshots/adw.png]]
+
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gtk4.adw/example)
+  (adw.example:main)
+#+END_SRC
+* [[file:webkit2.lisp][Simple Web Browser]] (WebKit2GTK)
+[[file:screenshots/webkit2.png]]
+
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gtk4.webkit2/example)
+  (webkit2.example:main)
+#+END_SRC
