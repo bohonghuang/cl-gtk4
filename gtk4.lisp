@@ -29,7 +29,8 @@
                                           (("Gesture" . "group") . group-gestures)
                                           (("Widget" . "is_sensitive") . widget-is-sensitive-p)
                                           (("Widget" . "is_visible") . widget-is-visible-p)
-                                          (("EntryBuffer" . "set_text")))))
+                                          (("EntryBuffer" . "set_text"))
+                                          (("TextBuffer" . "set_text")))))
 
 (gir-wrapper:define-gir-namespace "Gtk" "4.0")
 
@@ -39,6 +40,17 @@
 (defun (setf entry-buffer-text) (value instance)
   (declare (type string value))
   (gir:invoke (instance 'set-text) value (length value)))
+
+(export 'entry-buffer-text)
+
+(defun text-buffer-text (instance)
+  (gir:invoke (instance 'get-text) (text-buffer-start-iter instance) (text-buffer-end-iter instance) t))
+
+(defun (setf text-buffer-text) (value instance)
+  (declare (type string value))
+  (gir:invoke (instance 'set-text) value (length value)))
+
+(export 'text-buffer-text)
 
 (defun (setf widget-margin-all) (value instance)
   (setf (widget-margin-top instance) value
