@@ -150,3 +150,36 @@
       (setf (window-child window) window-box))
     (unless (widget-visible-p window)
       (window-present window))))
+
+(define-application (:name text-view-test
+                     :id "org.bohonghuang.gtk4-example.text-view-test")
+  (define-main-window (window (make-application-window :application *application*))
+    (setf (window-title window) "TextView Test")
+    (let ((window-box (make-box :orientation +orientation-vertical+
+                                :spacing 0)))
+      (let ((body-box (make-box :orientation +orientation-vertical+
+                                :spacing 0)))
+        (let ((scrolled-window (make-scrolled-window)))
+          (setf (widget-hexpand-p scrolled-window) t
+                (widget-vexpand-p scrolled-window) t)
+          (let ((view (make-text-view)))
+            (setf (scrolled-window-child scrolled-window) view)
+            (box-append body-box scrolled-window)
+            (let ((buffer (text-view-buffer view)))
+              (setf (text-buffer-text buffer) "Hello world!")
+              (let ((button (make-button :label "Insert markup")))
+                (connect button "clicked" (lambda (button)
+                                            (declare (ignore button))
+                                            (multiple-value-bind (has-selection-p start end) (text-buffer-selection-bounds buffer)
+                                              (let ((pos (text-iter-offset start))
+                                                    (text (if has-selection-p
+                                                              (prog1 (text-buffer-get-text buffer start end nil)
+                                                                (text-buffer-delete-selection buffer nil nil))
+                                                              "Hello World!")))
+                                                (text-buffer-insert-markup buffer (text-buffer-get-iter-at-offset buffer pos) (format nil "<span foreground=\"red\" font=\"Serif 20\">~A</span>" text))))))
+                (box-append body-box button)))))
+        (setf (widget-size-request body-box) '(400 200))
+        (box-append window-box body-box))
+      (setf (window-child window) window-box))
+    (unless (widget-visible-p window)
+      (window-present window))))
