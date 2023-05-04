@@ -23,10 +23,6 @@
 
 (gir-wrapper:define-gir-namespace "cairo")
 
-(cl:defpackage gdk4.example
-  (:use #:cl #:gtk4)
-  (:export #:cairo-test))
-
 (cl:in-package #:gdk4.example)
 
 (cffi:defcstruct gdk-rgba

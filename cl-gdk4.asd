@@ -32,4 +32,5 @@
   :build-pathname "cl-gdk4-example"
   :entry-point "gdk4.example:cairo-test"
   :pathname "./examples"
-  :components ((:file "gdk4-cairo")))
+  :components ((:file "gdk4")
+               (:file "gdk4-cairo" :depends-on ("gdk4"))))
