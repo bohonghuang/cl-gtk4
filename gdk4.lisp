@@ -369,5 +369,12 @@
 
 (gir-wrapper:define-gir-namespace "Gdk" "4.0")
 
+(cffi:defcstruct rectangle
+  "A GdkRectangle data type for representing rectangles."
+  (x :int)
+  (y :int)
+  (width :int)
+  (height :int))
+
 (cl:eval-when (:execute :compile-toplevel :load-toplevel)
   (cl:setf gir-wrapper:*quoted-name-alist* cl:nil))
