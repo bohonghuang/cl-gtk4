@@ -4,7 +4,7 @@
 
 #+BEGIN_SRC lisp
   (ql:quickload :cl-gtk4/example)
-  (gtk4.example:simple)
+  (gtk4.example:simple-counter)
 #+END_SRC
 * [[file:gtk4.lisp::49][Fibonacci Calculator]] (Multi-threading)
 [[file:screenshots/gtk4-fibonacci.png]]
@@ -18,14 +18,21 @@
 
 #+BEGIN_SRC lisp
   (ql:quickload :cl-gtk4/example)
-  (gtk4.example:menu-test)
+  (gtk4.example:simple-menu)
 #+END_SRC
 * [[file:gtk4.lisp::154][Simple Text View]]
 [[file:screenshots/text-view.png]]
 
 #+BEGIN_SRC lisp
   (ql:quickload :cl-gtk4/example)
-  (gtk4.example:text-view-test)
+  (gtk4.example:simple-text-view)
+#+END_SRC
+* [[file:gtk4.lisp::187][String List View]]
+[[file:screenshots/string-list-view.png]]
+
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gtk4/example)
+  (gtk4.example:string-list-view)
 #+END_SRC
 * [[file:gdk4-cairo.lisp][Pokéball Drawing Area]] ([[https://github.com/rpav/cl-cairo2][cl-cairo2]])
 [[file:screenshots/gdk4-cairo.png]]

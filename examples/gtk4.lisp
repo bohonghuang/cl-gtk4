@@ -17,12 +17,12 @@
 
 (defpackage gtk4.example
   (:use #:cl #:gtk4)
-  (:export #:simple #:fibonacci #:menu-test #:text-view-test))
+  (:export #:simple-counter #:fibonacci #:simple-menu #:simple-text-view #:string-list-view))
 
 (in-package #:gtk4.example)
 
-(define-application (:name simple
-                     :id "org.bohonghuang.gtk4-example.counter")
+(define-application (:name simple-counter
+                     :id "org.bohonghuang.gtk4-example.simple-counter")
   (define-main-window (window (make-application-window :application *application*))
     (setf (window-title window) "Simple Counter")
     (let ((box (make-box :orientation +orientation-vertical+
@@ -52,7 +52,7 @@
     (if (<= n 2) 1 (+ (fib (- n 1)) (fib (- n 2)))))
   (define-main-window (window (make-application-window :application *application*))
     (let ((n 40))
-      (setf (window-title window) "FIBONACCI CALCULATOR")
+      (setf (window-title window) "Fibonacci Calculator")
       (let ((box (make-box :orientation +orientation-vertical+
                            :spacing 4)))
         (let ((label (make-label :str "0")))
@@ -92,9 +92,9 @@
     (unless (widget-visible-p window)
       (window-present window))))
 
-(define-application (:name menu-test
-                     :id "org.bohonghuang.gtk4-example.menu-test")
-  (defun menu-test-menu ()
+(define-application (:name simple-menu
+                     :id "org.bohonghuang.gtk4-example.simple-menu")
+  (defun simple-menu-menu ()
     (let ((menu (gio:make-menu)))
       (let ((submenu (gio:make-menu)))
         (gio:menu-append-item submenu (gio:make-menu-item :model menu :label "Open" :detailed-action "app.open"))
@@ -115,10 +115,10 @@
             (about-dialog-logo-icon-name dialog) "application-x-addon")
       (values dialog)))
   (define-main-window (window (make-application-window :application *application*))
-    (setf (window-title window) "Menu Test")
+    (setf (window-title window) "Simple Menu")
     (let ((header-bar (make-header-bar)))
       (let ((menu-button (make-menu-button)))
-        (setf (menu-button-menu-model menu-button) (menu-test-menu)
+        (setf (menu-button-menu-model menu-button) (simple-menu-menu)
               (button-icon-name menu-button) "open-menu-symbolic")
         (header-bar-pack-end header-bar menu-button))
       (setf (window-titlebar window) header-bar))
@@ -141,7 +141,7 @@
                    (window-present dialog)))))
     (let ((window-box (make-box :orientation +orientation-vertical+
                                 :spacing 0)))
-      (let ((menu-bar (make-popover-menu-bar :model (menu-test-menu))))
+      (let ((menu-bar (make-popover-menu-bar :model (simple-menu-menu))))
         (box-append window-box menu-bar))
       (let ((empty-box (make-box :orientation +orientation-vertical+
                                  :spacing 0)))
@@ -151,10 +151,10 @@
     (unless (widget-visible-p window)
       (window-present window))))
 
-(define-application (:name text-view-test
-                     :id "org.bohonghuang.gtk4-example.text-view-test")
+(define-application (:name simple-text-view
+                     :id "org.bohonghuang.gtk4-example.simple-text-view")
   (define-main-window (window (make-application-window :application *application*))
-    (setf (window-title window) "TextView Test")
+    (setf (window-title window) "Simple Text View")
     (let ((window-box (make-box :orientation +orientation-vertical+
                                 :spacing 0)))
       (let ((body-box (make-box :orientation +orientation-vertical+
@@ -181,5 +181,50 @@
         (setf (widget-size-request body-box) '(400 200))
         (box-append window-box body-box))
       (setf (window-child window) window-box))
+    (unless (widget-visible-p window)
+      (window-present window))))
+
+(define-application (:name string-list-view
+                     :id "org.bohonghuang.gtk4-example.string-list-view")
+  (define-main-window (window (make-application-window :application *application*))
+    (let ((box (make-box :orientation +orientation-vertical+ :spacing 1)))
+      (let* ((model (make-string-list :strings (loop :for i :from 1 :to 10 :collect (format nil "Item ~D" i))))
+             (factory (make-signal-list-item-factory))
+             (list-view (make-list-view :model (make-single-selection :model model) :factory factory)))
+        (flet ((setup (factory item)
+                 (declare (ignore factory))
+                 (setf (list-item-child item) (make-label :str "")))
+               (bind (factory item)
+                 (declare (ignore factory))
+                 (setf (label-text (gobj:coerce (list-item-child item) 'label))
+                       (string-object-string (gobj:coerce (list-item-item item) 'string-object))))
+               (unbind (factory item)
+                 (declare (ignore factory item)))
+               (teardown (factory item)
+                 (declare (ignore factory item))))
+          (connect factory "setup" #'setup)
+          (connect factory "bind" #'bind)
+          (connect factory "unbind" #'unbind)
+          (connect factory "teardown" #'teardown))
+        (let ((scrolled-window (make-scrolled-window)))
+          (setf (widget-size-request scrolled-window) '(250 250)
+                (widget-vexpand-p scrolled-window) t
+                (widget-hexpand-p scrolled-window) t
+                (scrolled-window-child scrolled-window) list-view)
+          (box-append box scrolled-window))
+        (let ((button-append (make-button :label "Append"))
+              (button-remove (make-button :label "Remove")))
+          (connect button-append "clicked" (lambda (button)
+                                             (declare (ignore button))
+                                             (string-list-append model (format nil "Item ~D" (1+ (gio:list-model-n-items model))))))
+          (box-append box button-append)
+          (connect button-remove "clicked" (lambda (button)
+                                             (declare (ignore button))
+                                             (when (plusp (gio:list-model-n-items model))
+                                               (string-list-remove model (1- (gio:list-model-n-items model))))))
+          (box-append box button-remove)))
+      (setf (window-title window) "String List View"
+            (window-child window) box
+            (window-default-size window) '(300 300)))
     (unless (widget-visible-p window)
       (window-present window))))
