@@ -39,7 +39,7 @@
 
 (defun (setf entry-buffer-text) (value instance)
   (declare (type string value))
-  (gir:invoke (instance 'set-text) value (length value)))
+  (gir:invoke (instance 'set-text) value -1))
 
 (export 'entry-buffer-text)
 
@@ -48,7 +48,7 @@
 
 (defun (setf text-buffer-text) (value instance)
   (declare (type string value))
-  (gir:invoke (instance 'set-text) value (length value)))
+  (gir:invoke (instance 'set-text) value -1))
 
 (export 'text-buffer-text)
 
