@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.12.1 -->
+<interface>
+  <!-- interface-name hellobuilder.ui -->
+  <requires lib="gtk" version="4.10"/>
+  <object class="GtkApplicationWindow" id="window">
+    <property name="title">UI File Example</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel" id="label">
+            <property name="height-request">50</property>
+            <property name="label">&lt;i&gt;Hello&lt;/i&gt; &lt;b&gt;World&lt;/b&gt;!</property>
+            <property name="use-markup">True</property>
+            <property name="vexpand">True</property>
+            <property name="width-request">100</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="button-exit">
+            <property name="label">Exit</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
