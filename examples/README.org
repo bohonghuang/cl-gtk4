@@ -34,6 +34,13 @@
   (ql:quickload :cl-gtk4/example)
   (gtk4.example:string-list-view)
 #+END_SRC
+* [[file:gtk4.lisp::235][UI File]]
+[[file:screenshots/ui-file.png]]
+
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gtk4/example)
+  (gtk4.example:ui-file)
+#+END_SRC
 * [[file:gdk4-cairo.lisp][Pokéball Drawing Area]] ([[https://github.com/rpav/cl-cairo2][cl-cairo2]])
 [[file:screenshots/gdk4-cairo.png]]
 

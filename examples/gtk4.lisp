@@ -17,7 +17,7 @@
 
 (defpackage gtk4.example
   (:use #:cl #:gtk4)
-  (:export #:simple-counter #:fibonacci #:simple-menu #:simple-text-view #:string-list-view))
+  (:export #:simple-counter #:fibonacci #:simple-menu #:simple-text-view #:string-list-view #:ui-file))
 
 (in-package #:gtk4.example)
 
@@ -228,3 +228,22 @@
             (window-default-size window) '(300 300)))
     (unless (widget-visible-p window)
       (window-present window))))
+
+(defun system-absolute-pathname (pathname)
+  (merge-pathnames pathname (asdf:component-pathname (asdf:find-system '#:cl-gtk4/example))))
+
+(defun ui-file ()
+  (let ((app (make-application :application-id "org.bohonghuang.gtk4-example.ui-file"
+                               :flags gio:+application-flags-flags-none+)))
+    (connect app "activate"
+             (lambda (app)
+               (let ((builder (gtk:make-builder)))
+                 (gtk:builder-add-from-file builder (namestring (system-absolute-pathname "example-ui-file.ui")))
+                 (let ((window (gobj:coerce (builder-get-object builder "window") 'application-window))
+                       (button (gobj:coerce (builder-get-object builder "button-exit") 'button)))
+                   (setf (window-application window) app)
+                   (connect button "clicked" (lambda (button)
+                                               (declare (ignore button))
+                                               (window-destroy window)))
+                   (window-present window)))))
+    (application-run app nil)))
