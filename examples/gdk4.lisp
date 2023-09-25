@@ -41,10 +41,6 @@
                                            (setf (popover-child popover) (make-label :str "Popover")
                                                  (popover-pointing-to popover) (gobj:pointer-object rect 'gdk:rectangle))
                                            (popover-popup popover)))))
-        ;; The `add_controller' method takes ownership of the `controller',
-        ;; but `cl-gobject-introspection' doesn't remove the finalizer for the `controller' automatically,
-        ;; so we need to remove it here to avoid memory safety issues at present.
-        (assert (tg:cancel-finalization (gobj:object-pointer controller)))
         (widget-add-controller box controller))
       (let ((label (make-label :str "Click to pop up a Popover")))
         (setf (widget-vexpand-p label) t)
