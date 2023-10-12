@@ -15,8 +15,10 @@
 ;;;; You should have received a copy of the GNU Lesser General Public License
 ;;;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(cl:defpackage gdk4
+(uiop:define-package gdk4
   (:use)
+  (:use-reexport #:gdk-pixbuf2)
+  (:shadow #:*ns*)
   (:nicknames #:gdk)
   (:export #:*ns*))
 

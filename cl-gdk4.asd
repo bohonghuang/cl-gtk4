@@ -12,7 +12,8 @@
   :bug-tracker "https://github.com/bohonghuang/cl-gtk4/issues"
   :source-control (:git "https://github.com/bohonghuang/cl-gtk4.git")
   :serial t
-  :components ((:file "gdk4"))
+  :components ((:file "gdk-pixbuf2")
+               (:file "gdk4" :depends-on ("gdk-pixbuf2")))
   :depends-on (#:cl-gobject-introspection-wrapper))
 
 (uiop:register-image-restore-hook
