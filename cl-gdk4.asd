@@ -22,7 +22,12 @@
           (package (find-package (string-upcase namespace))))
      (when package
        (setf (symbol-value (find-symbol "*NS*" package))
-             (uiop:symbol-call :gir :require-namespace namespace "4.0"))))))
+             (uiop:symbol-call :gir :require-namespace namespace "4.0"))))
+   (let* ((namespace "GdkPixbuf")
+          (package (find-package '#:gdk-pixbuf2)))
+     (when package
+       (setf (symbol-value (find-symbol "*NS*" package))
+             (uiop:symbol-call :gir :require-namespace namespace "2.0"))))))
 
 (defsystem cl-gdk4/example
   :depends-on (#:asdf
