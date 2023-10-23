@@ -1,4 +1,4 @@
-;;;; webkit2.lisp
+;;;; webkit.lisp
 
 ;;;; Copyright (C) 2022-2023 Bohong Huang
 ;;;;
@@ -15,11 +15,11 @@
 ;;;; You should have received a copy of the GNU Lesser General Public License
 ;;;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(cl:defpackage webkit2
+(cl:defpackage webkit
   (:use)
   (:nicknames #:webkit)
   (:export #:*ns*))
 
-(cl:in-package #:webkit2)
+(cl:in-package #:webkit)
 
-(gir-wrapper:define-gir-namespace "WebKit2" "5.0")
+(gir-wrapper:define-gir-namespace "WebKit" "6.0")

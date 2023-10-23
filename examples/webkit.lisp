@@ -1,4 +1,4 @@
-;;;; examples/webkit2.lisp
+;;;; examples/webkit.lisp
 
 ;;;; Copyright (C) 2022-2023 Bohong Huang
 ;;;;
@@ -15,19 +15,19 @@
 ;;;; You should have received a copy of the GNU Lesser General Public License
 ;;;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(defpackage webkit2.example
+(defpackage webkit.example
   (:use #:cl #:gtk4)
   (:export #:main))
 
-(in-package #:webkit2.example)
+(in-package #:webkit.example)
 
 (defparameter *home-uri* "https://google.com")
 
 (define-application (:name main
-                     :id "org.bohonghuang.webkit2-example")
+                     :id "org.bohonghuang.webkit-example")
   (define-main-window (window (make-application-window :application *application*))
-    (let ((web-view (webkit:make-web-view :context (webkit:make-web-context))))
-      (setf (window-title window) "CL-GTK4-WEBKIT2-EXAMPLE"
+    (let ((web-view (webkit:make-web-view )))
+      (setf (window-title window) "CL-GTK4-WEBKIT-EXAMPLE"
             (window-default-size window) '(800 600))
       (connect web-view "load-changed" (lambda (web-view event)
                                          (declare (ignore event))
