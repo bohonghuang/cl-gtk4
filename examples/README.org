@@ -55,12 +55,12 @@
   (ql:quickload :cl-gtk4.adw/example)
   (adw.example:main)
 #+END_SRC
-* [[file:webkit2.lisp][Simple Web Browser]] (WebKit2GTK)
-[[file:screenshots/webkit2.png]]
+* [[file:webkit.lisp][Simple Web Browser]] (WebKitGTK)
+[[file:screenshots/webkit.png]]
 
 #+BEGIN_SRC lisp
-  (ql:quickload :cl-gtk4.webkit2/example)
-  (webkit2.example:main)
+  (ql:quickload :cl-gtk4.webkit/example)
+  (webkit.example:main)
 #+END_SRC
 * [[file:sourceview.lisp][Simple Code Viewer]] (GtkSourceView)
 [[file:screenshots/sourceview.png]]

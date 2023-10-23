@@ -1,12 +1,12 @@
 #+TITLE: cl-gtk4
 [[https://docs.gtk.org/gtk4/gtk-logo.svg]]
 
-GTK4/Libadwaita/WebKit2 bindings for Common Lisp.
+GTK4/Libadwaita/WebKit bindings for Common Lisp.
 * Requirement
 Before getting started, please ensure these libraries are available in your system:
 - GTK4
 - GObject Introspection
-- WebKit2GTK (optional)
+- WebkitGTK (optional)
 - libadwaita (optional)
 Theoretically, the application built with ~cl-gtk4~ can run on most systems supported by GTK4 and most implementations that support CFFI callback (required by ~cl-gobject-introspection~).
 The [[file:examples/][examples]] are tested to run on following implementations:
@@ -28,7 +28,7 @@ The [[file:examples/][examples]] are tested to run on following implementations:
 2. Load the library with:
    - ~(ql:quickload :cl-gtk4)~
    - ~(ql:quickload :cl-gtk4.adw)~ (if you need libadwaita)
-   - ~(ql:quickload :cl-gtk4.webkit2)~ (if you need WebKit2GTK)
+   - ~(ql:quickload :cl-gtk4.webkit)~ (if you need WebkitGTK)
 3. For GTK4 usage, please refer to [[https://docs.gtk.org/gtk4/][GTK API reference]] and check out the [[https://github.com/bohonghuang/cl-gobject-introspection-wrapper#conversion-rules][conversion rules]] for these APIs.
 ** Multi-threading
 Please note that GTK runs in a single thread and is NOT thread-safe, so all the UI-related operations must happen in GTK [[https://docs.gtk.org/glib/main-loop.html][main event loop]],
