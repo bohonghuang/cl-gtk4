@@ -25,5 +25,5 @@
   :build-operation program-op
   :build-pathname "cl-gtk4-webkit2-example"
   :entry-point "webkit2.example:main"
-  :pathname "./examples"
+  :pathname "examples/"
   :components ((:file "webkit2")))

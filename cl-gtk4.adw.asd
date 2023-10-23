@@ -26,5 +26,5 @@
   :build-operation program-op
   :build-pathname "cl-gtk4-libadwaita-example"
   :entry-point "adw.example:main"
-  :pathname "./examples"
+  :pathname "examples/"
   :components ((:file "adw")))

@@ -62,3 +62,10 @@
   (ql:quickload :cl-gtk4.webkit2/example)
   (webkit2.example:main)
 #+END_SRC
+* [[file:sourceview.lisp][Simple Code Viewer]] (GtkSourceView)
+[[file:screenshots/sourceview.png]]
+
+#+BEGIN_SRC lisp
+  (ql:quickload :cl-gtk4.sourceview/example)
+  (sourceview.example:main)
+#+END_SRC
