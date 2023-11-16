@@ -61,10 +61,12 @@
 (export 'widget-margin-all)
 
 (defun destroy-all-windows ()
+  "Destroy all windows currently open in the application."
   (mapcar (alexandria:compose #'window-close (alexandria:rcurry #'gobj:pointer-object 'window))
           (glib:glist-list (application-windows gio:*application*))))
 
 (defun destroy-all-windows-and-quit ()
+  "Destroy all windows currently open in the application and exit the application."
   (destroy-all-windows)
   (idle-add (lambda () (gio:application-quit gio:*application*))))
 
@@ -74,6 +76,7 @@
   (multiple-value-list (eval (read *query-io*))))
 
 (defun attach-restarts (function)
+  "Return a wrapper function with restarts attached to FUNCTION."
   (lambda (&rest args)
     (restart-case (apply function args)
       (return ()
@@ -94,26 +97,35 @@
         (values value)))))
 
 (defun connect (g-object signal c-handler &key after swapped)
+  "Similar to GIR:CONNECT, but calls to C-HANDLER will attach restarts to
+safely exit the application in case of errors."
   (gir:connect g-object signal (attach-restarts c-handler) :after after :swapped swapped))
 
 (export 'connect)
 
 (defun idle-add (function &optional (priority glib:+priority-default+))
+  "Similar to GLIB:IDLE-ADD, but calls to C-HANDLER will attach restarts
+to safely exit the application in case of errors."
   (glib:idle-add (attach-restarts function) priority))
 
 (export 'idle-add)
 
 (defun timeout-add (interval function &optional (priority glib:+priority-default+))
+  "Similar to GLIB:TIMEOUT-ADD, but calls to C-HANDLER will attach
+restarts to safely exit the application in case of errors."
   (glib:timeout-add interval (attach-restarts function) priority))
 
 (export 'timeout-add)
 
 (defun timeout-add-seconds (interval function &optional (priority glib:+priority-default+))
+  "Similar to GLIB:TIMEOUT-ADD-SECONDS, but calls to C-HANDLER will
+attach restarts to safely exit the application in case of errors."
   (glib:timeout-add-seconds interval (attach-restarts function) priority))
 
 (export 'timeout-add-seconds)
 
 (defmacro run-in-main-event-loop ((&key (priority 'glib:+priority-default+)) &body body)
+  "Execute BODY in the main event loop of the GTK application with PRIORITY."
   `(idle-add (lambda () ,@body nil) ,priority))
 
 (export 'run-in-main-event-loop)
@@ -131,6 +143,8 @@
 (defvar *simple-break-function* nil)
 
 (defun break-from-main-event-loop ()
+  "A custom BREAK function to break the GTK event loop and safely exit
+the GTK application."
   (if gio:*application*
       (glib:idle-add (lambda ()
                        (restart-case (funcall *simple-break-function*)
@@ -142,6 +156,7 @@
       (funcall *simple-break-function*)))
 
 (defun install-break-handler ()
+  "Install the custom BREAK function as the break handler."
   (when *simple-break-function*
     (error "Cannot install the break handler twice."))
   (setf *simple-break-function* (fdefinition (simple-break-symbol))
@@ -150,6 +165,7 @@
 (export 'install-break-handler)
 
 (defun uninstall-break-handler ()
+  "Uninstall the custom BREAK function as the break handler."
   (unless *simple-break-function*
     (error "The break handler has not been installed."))
   (setf (fdefinition (simple-break-symbol)) *simple-break-function*
@@ -162,6 +178,12 @@
     (install-break-handler)))
 
 (defmacro define-main-window (binding &body body)
+  "Bind the window created based on BINDING to a variable and make it the
+main window of the application. This window automatically runs during
+the execution of the application and is updated automatically with the
+compilation of DEFINE-APPLICATION form. This macro can only be used
+within the DEFINE-APPLICATION macro, otherwise an error will be
+signaled during expansion."
   (declare (ignore binding body))
   (error "Cannot expand DEFINE-MAIN-WINDOW outside DEFINE-APPLICATION."))
 
@@ -171,6 +193,13 @@
                                  (name nil))
                               &body
                                 body)
+  "Define the entry function NAME for the application, in which an
+application object is created using ID and the application flags
+FLAGS. In the BODY, variables and functions related to the application
+can be defined, so that they can be compiled simultaneously when
+compiling this toplevel form. Typically, DEFINE-MAIN-WINDOW is used in
+the BODY to define the main window, which enables interactive
+hot-reloading during compilation."
   (let ((prefix (if id-specified-p (format nil "~A." id) "")))
     (let ((window (intern (format nil "*~AMAIN-WINDOW*" (string-upcase prefix))))
           (content (intern (format nil "~AMAIN-WINDOW-CONTENT" (string-upcase prefix))))
