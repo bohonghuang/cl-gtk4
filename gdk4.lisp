@@ -358,6 +358,7 @@
                                              ("KEY_dead_i"                    . |+KEY-DEAD-i+|)
                                              ("KEY_dead_o"                    . |+KEY-DEAD-o+|)
                                              ("KEY_dead_u"                    . |+KEY-DEAD-u+|)
+                                             ("KEY_dead_schwa"                . |+KEY-DEAD-schwa+|)
                                              ("KEY_kana_a"                    . |+KEY-KANA-a+|)
                                              ("KEY_kana_e"                    . |+KEY-KANA-e+|)
                                              ("KEY_kana_i"                    . |+KEY-KANA-i+|)
