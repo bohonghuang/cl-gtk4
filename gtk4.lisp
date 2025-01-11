@@ -78,23 +78,24 @@
 (defun attach-restarts (function)
   "Return a wrapper function with restarts attached to FUNCTION."
   (lambda (&rest args)
-    (restart-case (apply function args)
-      (return ()
-        :report "Return from current handler."
-        (values nil))
-      (return-and-abort ()
-        :report "Return from current handler and abort the GTK application."
-        (destroy-all-windows-and-quit)
-        (values nil))
-      (return-value (value)
-        :report "Return from current handler with specified value."
-        :interactive read-return-value
-        (values value))
-      (return-value-and-abort (value)
-        :report "Return from current handler with specified value and abort the GTK application."
-        :interactive read-return-value
-        (destroy-all-windows-and-quit)
-        (values value)))))
+    (with-condition-restarts (make-condition 'condition) (compute-restarts)
+      (restart-case (apply function args)
+        (return ()
+          :report "Return from current handler."
+          (values nil))
+        (return-value (value)
+          :report "Return from current handler with specified value."
+          :interactive read-return-value
+          (values value))
+        (abort ()
+          :report "Return from current handler and abort the GTK application."
+          (destroy-all-windows-and-quit)
+          (values nil))
+        (return-value-and-abort (value)
+          :report "Return from current handler with specified value and abort the GTK application."
+          :interactive read-return-value
+          (destroy-all-windows-and-quit)
+          (values value))))))
 
 (defun connect (g-object signal c-handler &key after swapped)
   "Similar to GIR:CONNECT, but calls to C-HANDLER will attach restarts to
@@ -147,10 +148,11 @@ attach restarts to safely exit the application in case of errors."
 the GTK application."
   (if gio:*application*
       (glib:idle-add (lambda ()
-                       (restart-case (funcall *simple-break-function*)
-                         (abort-application ()
-                           :report "Abort the GTK application."
-                           (destroy-all-windows-and-quit)))
+                       (with-condition-restarts (make-condition 'condition) (compute-restarts)
+                         (restart-case (funcall *simple-break-function*)
+                           (abort ()
+                             :report "Abort the GTK application."
+                             (destroy-all-windows-and-quit))))
                        (values nil))
                      glib:+priority-high+)
       (funcall *simple-break-function*)))
