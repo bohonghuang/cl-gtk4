@@ -299,6 +299,7 @@
                                              ("KEY_Serbian_lje"               . |+KEY-SERBIAN-lje+|)
                                              ("KEY_Serbian_nje"               . |+KEY-SERBIAN-nje+|)
                                              ("KEY_Serbian_tshe"              . |+KEY-SERBIAN-tshe+|)
+                                             ("KEY_ScreenSaver"               . |+KEY-screensaver+|)
                                              ("KEY_t"                         . |+KEY-t+|)
                                              ("KEY_thorn"                     . |+KEY-thorn+|)
                                              ("KEY_tabovedot"                 . |+KEY-tabovedot+|)
